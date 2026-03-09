@@ -1,0 +1,22 @@
+<section class="py-20 bg-neutral-100">
+  <div class="max-w-7xl mx-auto px-6">
+
+    <h2 class="text-2xl font-semibold text-neutral-800 mb-10">
+      Nghệ nhân & Đối tác
+    </h2>
+
+    <div class="grid md:grid-cols-4 gap-6">
+
+      <div *ngFor="let partner of partners"
+           class="bg-white border rounded-xl h-40 flex items-center justify-center hover:shadow-md transition">
+
+        <span class="text-neutral-700 font-medium text-center px-4">
+          {{ partner.name }}
+        </span>
+
+      </div>
+
+    </div>
+
+  </div>
+</section>

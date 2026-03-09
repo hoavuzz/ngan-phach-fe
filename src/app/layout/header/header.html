@@ -1,0 +1,173 @@
+<header class="border-b border-amber-200 bg-white">
+
+  <!-- Topbar -->
+  <div class="bg-amber-800 text-amber-50 text-sm">
+    <div class="max-w-7xl mx-auto px-6 py-2 flex justify-between">
+
+      <div class="flex gap-6 items-center">
+        <span class="flex items-center gap-2">
+          <i class="fa-solid fa-phone"></i>
+          Hotline: 0123 456 789
+        </span>
+
+        <span class="flex items-center gap-2">
+          <i class="fa-solid fa-envelope"></i>
+          Email: contact@nhaccutruyenthong.vn
+        </span>
+      </div>
+
+      <div class="flex gap-4">
+        <a class="hover:text-amber-200 cursor-pointer flex items-center gap-1 transition">
+          <i class="fa-regular fa-user"></i>
+          Đăng nhập
+        </a>
+        <a class="hover:text-amber-200 cursor-pointer transition">
+          Đăng ký
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- Main header -->
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center gap-10">
+    <!-- Logo -->
+    <div class="flex-shrink-0">
+      <a routerLink="/">
+        <img
+          src="images/logo.png"
+          alt="Nhạc Cụ Dân Tộc"
+          class="h-20 w-auto object-contain"
+        />
+      </a>
+    </div>
+
+    <!-- Search -->
+    <div class="flex-1">
+      <form role="search"
+        class="relative flex border border-amber-300 rounded-xl overflow-hidden shadow-sm">
+
+        <input
+          type="search"
+          placeholder="Tìm kiếm sản phẩm..."
+          class="flex-1 px-4 py-3 pl-10 outline-none focus:ring-2 focus:ring-amber-600"
+        />
+
+        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-amber-600"></i>
+
+        <button
+          type="submit"
+          class="px-8 bg-amber-800 text-white hover:bg-amber-900 transition">
+          Tìm
+        </button>
+
+      </form>
+    </div>
+
+    <!-- Actions -->
+    <div class="flex items-center gap-8 text-sm text-amber-900">
+
+      <a class="hover:text-amber-700 flex items-center gap-2 cursor-pointer transition">
+        <i class="fa-regular fa-heart text-xl"></i>
+        <span>Yêu thích</span>
+      </a>
+
+      <a
+        routerLink="/gio-hang"
+        routerLinkActive="text-amber-700"
+        class="relative hover:text-amber-700 flex items-center gap-2 cursor-pointer transition">
+        <i class="fa-solid fa-cart-shopping text-xl"></i>
+        <span>Giỏ hàng</span>
+        <span class="absolute -top-2 -right-3 text-xs bg-amber-800 text-white px-2 py-0.5 rounded-full">
+          0
+        </span>
+      </a>
+
+    </div>
+
+  </div>
+
+
+  <!-- Navigation -->
+  <nav class="bg-white">
+    <div class="max-w-7xl mx-auto px-6">
+    <ul class="flex items-center gap-8 text-lg font-medium text-neutral-800 ml-10">
+
+      <!-- Trang chủ -->
+      <li class="py-3 hover:text-black cursor-pointer transition">
+        Trang chủ
+      </li>
+
+      <!-- Thương hiệu -->
+      <li class="relative group py-3 cursor-pointer">
+
+        <div class="flex items-center gap-1 hover:text-black transition">
+          Thương hiệu
+          <i class="fa-solid fa-chevron-down text-base mt-[2px]"></i>
+        </div>
+
+        <div class="absolute left-0 top-full mt-2 w-56 bg-white shadow-lg rounded-lg
+                    opacity-0 invisible group-hover:opacity-100 group-hover:visible
+                    transition-all duration-200">
+
+          <ul class="py-3 text-base text-neutral-600">
+            <li class="px-5 py-2 hover:bg-neutral-100 hover:text-black transition cursor-pointer">
+              Nghệ nhân A
+            </li>
+            <li class="px-5 py-2 hover:bg-neutral-100 hover:text-black transition cursor-pointer">
+              Nghệ nhân B
+            </li>
+            <li class="px-5 py-2 hover:bg-neutral-100 hover:text-black transition cursor-pointer">
+              Bộ sưu tập truyền thống
+            </li>
+          </ul>
+
+        </div>
+      </li>
+
+      <!-- Sản phẩm -->
+      <li class="relative group py-3 cursor-pointer">
+
+        <div class="flex items-center gap-1 hover:text-black transition">
+          Sản phẩm
+          <i class="fa-solid fa-chevron-down text-base mt-[2px]"></i>
+        </div>
+
+        <div class="absolute left-0 top-full mt-2 w-56 bg-white shadow-lg rounded-lg
+                    opacity-0 invisible group-hover:opacity-100 group-hover:visible
+                    transition-all duration-200">
+
+          <ul class="py-3 text-base text-neutral-600">
+            <li class="px-5 py-2 hover:bg-neutral-100 hover:text-black transition cursor-pointer">
+              Đàn dây
+            </li>
+            <li class="px-5 py-2 hover:bg-neutral-100 hover:text-black transition cursor-pointer">
+              Nhạc cụ gõ
+            </li>
+            <li class="px-5 py-2 hover:bg-neutral-100 hover:text-black transition cursor-pointer">
+              Nhạc cụ hơi
+            </li>
+            <li class="px-5 py-2 hover:bg-neutral-100 hover:text-black transition cursor-pointer">
+              Phụ kiện
+            </li>
+          </ul>
+
+        </div>
+      </li>
+
+      <!-- Giới thiệu -->
+      <li class="py-4 hover:text-black cursor-pointer transition">
+        Giới thiệu
+      </li>
+
+      <!-- Liên hệ -->
+      <li class="py-4 hover:text-black cursor-pointer transition">
+        Liên hệ
+      </li>
+
+    </ul>
+  </div>
+</nav>
+
+</header>
