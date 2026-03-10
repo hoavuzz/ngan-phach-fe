@@ -1,0 +1,149 @@
+<main class="bg-neutral-50 min-h-screen py-10">
+  <div class="max-w-7xl mx-auto px-6">
+
+    <!-- Breadcrumb -->
+    <div class="flex items-center gap-2 text-sm text-gray-500 mb-8">
+      <a routerLink="/" class="hover:text-red-800 transition">Trang chủ</a>
+      <span>/</span>
+      <span class="text-gray-800 font-medium">Giỏ hàng</span>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-8">
+
+      <!-- Danh sách sản phẩm -->
+      <div class="lg:col-span-2 space-y-4">
+
+        <!-- Header chọn tất cả -->
+        <div class="bg-white rounded-xl shadow-sm p-4 flex items-center justify-between">
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input type="checkbox" class="w-4 h-4 accent-red-800" />
+            <span class="font-medium text-gray-700">Chọn tất cả (3 sản phẩm)</span>
+          </label>
+          <button class="text-sm text-red-800 hover:text-red-900 transition">Xóa đã chọn</button>
+        </div>
+
+        <!-- Cart Item -->
+        <div *ngFor="let item of cartItems" class="bg-white rounded-xl shadow-sm p-5">
+          <div class="flex gap-5">
+            <input type="checkbox" class="w-4 h-4 accent-red-800 mt-1 flex-shrink-0" [(ngModel)]="item.selected" />
+
+            <!-- Ảnh -->
+            <div class="w-28 h-28 bg-neutral-100 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+              <img [src]="item.imageUrl" [alt]="item.name" class="object-cover w-full h-full" />
+            </div>
+
+            <!-- Thông tin -->
+            <div class="flex-1 min-w-0">
+              <div class="flex justify-between items-start gap-2">
+                <div>
+                  <h3 class="font-semibold text-gray-800 mb-1">{{ item.name }}</h3>
+                  <p class="text-sm text-gray-500 mb-3">{{ item.variant }}</p>
+                  <div class="flex items-center gap-3">
+                    <span class="text-lg font-bold text-red-800">{{ item.price | number }}₫</span>
+                    <span *ngIf="item.originalPrice" class="text-sm text-gray-400 line-through">{{ item.originalPrice | number }}₫</span>
+                  </div>
+                </div>
+                <button class="text-gray-300 hover:text-red-800 transition flex-shrink-0">
+                  <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+              </div>
+
+              <!-- Số lượng + tạm tính -->
+              <div class="flex items-center justify-between mt-4">
+                <div class="flex items-center border border-gray-200 rounded-lg overflow-hidden">
+                  <button (click)="decrease(item)" class="px-3 py-1 hover:bg-neutral-100 transition text-gray-600">−</button>
+                  <span class="px-4 py-1 text-sm font-medium border-x border-gray-200">{{ item.quantity }}</span>
+                  <button (click)="increase(item)" class="px-3 py-1 hover:bg-neutral-100 transition text-gray-600">+</button>
+                </div>
+                <div class="text-right">
+                  <p class="text-xs text-gray-400 mb-0.5">Tạm tính</p>
+                  <p class="font-bold text-gray-800">{{ item.price * item.quantity | number }}₫</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tiếp tục mua -->
+        <div class="pt-2">
+          <a routerLink="/" class="inline-flex items-center gap-2 text-sm text-red-800 hover:text-red-900 transition font-medium">
+            <i class="fa-solid fa-arrow-left"></i>
+            Tiếp tục mua hàng
+          </a>
+        </div>
+      </div>
+
+      <!-- Thông tin đơn hàng -->
+      <div class="lg:col-span-1">
+        <div class="bg-white rounded-xl shadow-sm p-6 sticky top-24 space-y-6">
+
+          <h2 class="font-bold text-lg text-gray-800 pb-4 border-b border-neutral-100">Thông Tin Đơn Hàng</h2>
+
+          <!-- Voucher -->
+          <div>
+            <label class="text-sm font-medium text-gray-700 mb-2 block">Mã giảm giá</label>
+            <div class="flex gap-2">
+              <input type="text" placeholder="Nhập mã voucher"
+                class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-red-800" />
+              <button class="bg-red-800 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-900 transition">
+                Áp dụng
+              </button>
+            </div>
+          </div>
+
+          <!-- Chi tiết giá -->
+          <div class="space-y-3 text-sm pb-4 border-b border-neutral-100">
+            <div class="flex justify-between text-gray-600">
+              <span>Tạm tính</span>
+              <span class="font-medium text-gray-800">{{ subtotal | number }}₫</span>
+            </div>
+            <div class="flex justify-between text-gray-600">
+              <span>Giảm giá</span>
+              <span class="font-medium text-red-800">−{{ discount | number }}₫</span>
+            </div>
+            <div class="flex justify-between text-gray-600">
+              <span>Phí vận chuyển</span>
+              <span class="font-medium text-green-700">Miễn phí</span>
+            </div>
+          </div>
+
+          <!-- Tổng -->
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-gray-800">Tổng cộng</span>
+            <div class="text-right">
+              <p class="text-2xl font-bold text-red-800">{{ subtotal - discount | number }}₫</p>
+              <p class="text-xs text-gray-400">Đã bao gồm VAT</p>
+            </div>
+          </div>
+
+          <!-- Thanh toán -->
+          <button class="w-full bg-red-800 text-white py-3 rounded-lg font-semibold hover:bg-red-900 transition">
+            Tiến Hành Thanh Toán
+          </button>
+
+          <!-- Cam kết -->
+          <div class="space-y-2 text-sm text-gray-500 pt-2 border-t border-neutral-100">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-check text-green-600 text-xs"></i>
+              <span>Miễn phí vận chuyển toàn quốc</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-check text-green-600 text-xs"></i>
+              <span>Bảo hành 12 tháng chính hãng</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-check text-green-600 text-xs"></i>
+              <span>Đổi trả trong 7 ngày</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-check text-green-600 text-xs"></i>
+              <span>Thanh toán an toàn & bảo mật</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>

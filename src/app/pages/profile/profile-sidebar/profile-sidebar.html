@@ -1,0 +1,40 @@
+<div class="w-64 bg-white border border-[#E5D3B3] rounded-xl p-6 shadow-sm">
+
+<div class="flex items-center gap-3 pb-6 border-b">
+
+<img src="https://i.pravatar.cc/100"
+class="w-12 h-12 rounded-full">
+
+<div>
+<p class="font-semibold">{{ user?.ten || 'Khách hàng' }}</p>
+<p class="text-sm text-gray-500">{{ user?.vaiTro || 'Khách hàng' }}</p>
+</div>
+
+</div>
+
+<nav class="mt-6 space-y-2 text-sm">
+
+<a
+routerLink="/trang-ca-nhan"
+routerLinkActive="bg-[#9A3F0F] text-white"
+[routerLinkActiveOptions]="{ exact: true }"
+class="block px-4 py-2 rounded-lg">
+Thông tin cá nhân
+</a>
+
+<a
+routerLink="/trang-ca-nhan/don-hang-cua-toi"
+routerLinkActive="bg-[#9A3F0F] text-white"
+class="block px-4 py-2 rounded-lg">
+Đơn hàng của tôi
+</a>
+
+<a
+(click)="logout()"
+class="block px-4 py-2 rounded-lg cursor-pointer text-red-600 hover:bg-red-50">
+Đăng xuất
+</a>
+
+</nav>
+
+</div>

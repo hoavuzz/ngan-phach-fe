@@ -1,0 +1,51 @@
+<div class="bg-white border rounded-xl overflow-hidden hover:shadow-lg transition duration-300 flex flex-col h-[420px] relative">
+
+  <!-- BADGE NEW -->
+  <div
+    *ngIf="badge"
+    class="absolute top-3 left-3 bg-red-600 text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
+    {{ badge }}
+  </div>
+
+  <!-- HÌNH -->
+  <div class="h-56 bg-gray-100 flex items-center justify-center">
+    <span class="text-gray-400 text-sm">
+      {{ product?.image || 'Hình sản phẩm' }}
+    </span>
+  </div>
+
+  <!-- NỘI DUNG -->
+  <div class="p-5 flex flex-col flex-1">
+
+    <!-- TÊN -->
+    <h3 class="font-semibold text-neutral-800 mb-2 line-clamp-2">
+      {{ product?.name }}
+    </h3>
+
+    <!-- GIÁ -->
+    <p class="text-amber-700 font-bold text-lg mb-3">
+      {{ product?.price }} ₫
+    </p>
+
+    <!-- MÔ TẢ -->
+    <p
+      class="text-sm text-neutral-600 mb-4 overflow-hidden"
+      style="display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+      {{ product?.desc }}
+    </p>
+
+    <!-- NÚT -->
+    <div class="mt-auto space-y-2">
+
+      <button class="w-full border border-amber-700 text-amber-700 py-2 rounded-lg text-sm hover:bg-amber-700 hover:text-white transition">
+        Thêm vào giỏ
+      </button>
+
+      <button class="w-full bg-amber-800 text-white py-2 rounded-lg text-sm hover:bg-amber-900 transition">
+        Mua ngay
+      </button>
+
+    </div>
+
+  </div>
+</div>
