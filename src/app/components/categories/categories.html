@@ -1,0 +1,56 @@
+<section class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-6">
+    <h2 class="text-3xl font-bold text-neutral-800 mb-12 text-center">
+      Danh mục nhạc cụ
+    </h2>
+
+    <!-- Loading -->
+    <div *ngIf="isLoading" class="text-center py-10">
+      <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-800 mx-auto"></div>
+      <p class="mt-4 text-neutral-600">Đang tải danh mục...</p>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="error" class="text-center py-10 text-red-600">
+      {{ error }}
+    </div>
+
+    <!-- Danh sách danh mục -->
+    <div *ngIf="!isLoading && !error" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div
+        *ngFor="let cat of categories"
+        (click)="goToCategory(cat.slug)"
+        class="group relative overflow-hidden rounded-xl shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer bg-white border border-neutral-200"
+      >
+        <!-- Ảnh (placeholder nếu chưa có cột ảnh) -->
+        <div class="h-48 bg-gradient-to-br from-red-800/10 to-neutral-100 flex items-center justify-center">
+          <span class="text-6xl opacity-20 group-hover:opacity-30 transition-opacity">
+            🎶
+          </span>
+          <!-- Nếu sau này có ảnh:
+          <img [src]="cat.hinhAnh || 'assets/images/default-category.jpg'" alt="{{cat.tenDanhMuc}}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+          -->
+        </div>
+
+        <!-- Nội dung -->
+        <div class="p-6">
+          <h3 class="text-xl font-semibold text-neutral-800 mb-2 group-hover:text-red-800 transition-colors">
+            {{ cat.tenDanhMuc }}
+          </h3>
+          <p class="text-neutral-600 text-sm line-clamp-2">
+            {{ cat.moTa }}
+          </p>
+        </div>
+
+        <!-- Overlay hover -->
+        <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end">
+          <div class="p-6 w-full">
+            <span class="text-white font-medium flex items-center justify-center">
+              Khám phá →
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

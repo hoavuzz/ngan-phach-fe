@@ -1,0 +1,46 @@
+<section class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-6">
+
+    <div class="flex justify-between items-center mb-10">
+      <h2 class="text-2xl font-semibold text-neutral-800">
+        Tin tức
+      </h2>
+      <button class="text-amber-700 hover:underline">
+        Xem tất cả
+      </button>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6">
+
+      <div *ngFor="let news of newsList"
+           class="border rounded-xl overflow-hidden hover:shadow-lg transition bg-white">
+
+        <!-- Hình -->
+        <div class="h-48 bg-gray-100"></div>
+
+        <!-- Nội dung -->
+        <div class="p-5">
+
+          <p class="text-sm text-neutral-500 mb-2">
+            {{ news.ngayDang | date:'dd/MM/yyyy' }}
+          </p>
+
+          <h3 class="font-semibold text-neutral-800 mb-3 line-clamp-2">
+            {{ news.tieuDe }}
+          </h3>
+
+          <p class="text-sm text-neutral-600 line-clamp-2 mb-4">
+            {{ news.tomTat }}...
+          </p>
+
+          <button class="text-amber-700 text-sm hover:underline">
+            Đọc thêm →
+          </button>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
