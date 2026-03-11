@@ -16,14 +16,39 @@
         </span>
       </div>
 
-      <div class="flex gap-4">
-        <a class="hover:text-amber-200 cursor-pointer flex items-center gap-1 transition">
-          <i class="fa-regular fa-user"></i>
-          Đăng nhập
-        </a>
-        <a class="hover:text-amber-200 cursor-pointer transition">
-          Đăng ký
-        </a>
+      <div class="flex gap-4 items-center">
+
+        <!-- CHƯA LOGIN -->
+        <ng-container *ngIf="!user">
+
+          <a routerLink="/login"
+            class="hover:text-amber-200 cursor-pointer flex items-center gap-1 transition">
+            <i class="fa-regular fa-user"></i>
+            Đăng nhập
+          </a>
+
+          <a routerLink="/register"
+            class="hover:text-amber-200 cursor-pointer transition">
+            Đăng ký
+          </a>
+
+        </ng-container>
+
+
+        <!-- ĐÃ LOGIN -->
+        <ng-container *ngIf="user">
+
+          <a routerLink="/trang-ca-nhan"
+            class="hover:text-amber-200 flex items-center gap-2">
+
+            <i class="fa-solid fa-user"></i>
+
+            Xin chào, {{ user.hoTen }}
+
+          </a>
+
+        </ng-container>
+
       </div>
 
     </div>

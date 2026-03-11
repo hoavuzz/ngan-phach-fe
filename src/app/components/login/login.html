@@ -1,0 +1,95 @@
+<main class="main-content">
+  <div class="login-container">
+
+    <!-- Left Side -->
+    <div class="login-image">
+      <div class="image-content">
+        <h2>Chào mừng trở lại!</h2>
+        <p>
+          Đăng nhập để khám phá bộ sưu tập nhạc cụ truyền thống Việt Nam
+          phong phú nhất với hàng ngàn sản phẩm chất lượng cao.
+        </p>
+      </div>
+    </div>
+
+    <!-- Right Side -->
+    <div class="login-form-container">
+
+      <div class="form-header">
+        <h2>Đăng Nhập</h2>
+        <p>Nhập thông tin tài khoản của bạn để tiếp tục</p>
+      </div>
+
+      <!-- FORM ANGULAR -->
+      <form class="login-form" #f="ngForm" (ngSubmit)="login()" novalidate>
+
+        <!-- EMAIL -->
+        <div class="form-group">
+
+          <label>Email</label>
+
+          <div class="input-wrapper">
+            <input
+              type="email"
+              name="email"
+              [(ngModel)]="user.email"
+              placeholder="Nhập địa chỉ email"
+              required
+            >
+          </div>
+
+        </div>
+
+
+        <!-- PASSWORD -->
+        <div class="form-group">
+
+          <label>Mật khẩu</label>
+
+          <div class="input-wrapper">
+            <input
+              type="password"
+              name="matKhau"
+              [(ngModel)]="user.matKhau"
+              placeholder="Nhập mật khẩu"
+              required
+            >
+          </div>
+
+        </div>
+
+
+        <!-- OPTIONS -->
+        <div class="form-options">
+
+          <label class="remember-me">
+            <input type="checkbox">
+            <span class="checkmark"></span>
+            <span>Ghi nhớ đăng nhập</span>
+          </label>
+
+          <a href="#" class="forgot-password">
+            Quên mật khẩu?
+          </a>
+
+        </div>
+
+
+        <!-- BUTTON -->
+        <button type="submit" class="btn-login" [disabled]="f.invalid">
+          <span class="btn-text">Đăng Nhập</span>
+        </button>
+
+
+        <!-- REGISTER -->
+        <p class="register-link">
+          Chưa có tài khoản?
+          <a routerLink="/register">Đăng ký ngay</a>
+        </p>
+
+      </form>
+
+    </div>
+
+  </div>
+</main>

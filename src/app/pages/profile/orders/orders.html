@@ -1,0 +1,179 @@
+<div class="flex-1 w-full">
+
+<h2 class="text-2xl font-semibold mb-6">
+Đơn hàng của tôi
+</h2>
+
+<!-- FILTER -->
+
+<div class="bg-white border border-[#E5D3B3] rounded-xl p-4 mb-6 flex gap-4 text-sm">
+
+<button
+class="px-4 py-2 rounded-lg"
+[ngClass]="activeFilter === 'all' ? 'bg-[#9A3F0F] text-white' : 'hover:bg-[#FAF7F2]'"
+(click)="setFilter('all')">
+Tất cả
+</button>
+
+<button
+class="px-4 py-2 rounded-lg"
+[ngClass]="activeFilter === 'pending' ? 'bg-[#9A3F0F] text-white' : 'hover:bg-[#FAF7F2]'"
+(click)="setFilter('pending')">
+Chờ xác nhận
+</button>
+
+<button
+class="px-4 py-2 rounded-lg"
+[ngClass]="activeFilter === 'shipping' ? 'bg-[#9A3F0F] text-white' : 'hover:bg-[#FAF7F2]'"
+(click)="setFilter('shipping')">
+Đang giao
+</button>
+
+<button
+class="px-4 py-2 rounded-lg"
+[ngClass]="activeFilter === 'done' ? 'bg-[#9A3F0F] text-white' : 'hover:bg-[#FAF7F2]'"
+(click)="setFilter('done')">
+Hoàn thành
+</button>
+
+<button
+class="px-4 py-2 rounded-lg"
+[ngClass]="activeFilter === 'cancel' ? 'bg-[#9A3F0F] text-white' : 'hover:bg-[#FAF7F2]'"
+(click)="setFilter('cancel')">
+Đã hủy
+</button>
+
+</div>
+
+
+<!-- ORDER LIST -->
+
+<div class="space-y-5">
+
+<!-- ORDER ITEM -->
+
+<div class="bg-white border border-[#E5D3B3] rounded-xl p-5 shadow-sm">
+
+<div class="flex justify-between mb-4 text-sm">
+
+<div>
+Mã đơn: <span class="font-semibold">#DH1023</span>
+</div>
+
+<div class="text-[#9A3F0F] font-medium">
+Đang giao
+</div>
+
+</div>
+
+<div class="flex gap-4 items-center border-t pt-4">
+
+<img
+src="https://via.placeholder.com/80"
+class="w-20 h-20 rounded object-cover">
+
+<div class="flex-1 w-full">
+
+<p class="font-medium">
+Đàn Tranh 16 Dây Gỗ Trắc
+</p>
+
+<p class="text-sm text-gray-500">
+Số lượng: 1
+</p>
+
+</div>
+
+<div class="font-semibold text-[#9A3F0F]">
+4.500.000đ
+</div>
+
+</div>
+
+<div class="flex justify-between items-center mt-4 border-t pt-4">
+
+<div class="text-sm text-gray-500">
+Ngày đặt: 08/03/2026
+</div>
+
+<div class="flex gap-3">
+
+<button
+class="px-4 py-2 border rounded-lg text-sm hover:bg-gray-100">
+Xem chi tiết
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ORDER ITEM -->
+
+<div class="bg-white border border-[#E5D3B3] rounded-xl p-5 shadow-sm">
+
+<div class="flex justify-between mb-4 text-sm">
+
+<div>
+Mã đơn: <span class="font-semibold">#DH1015</span>
+</div>
+
+<div class="text-green-600 font-medium">
+Hoàn thành
+</div>
+
+</div>
+
+<div class="flex gap-4 items-center border-t pt-4">
+
+<img
+src="https://via.placeholder.com/80"
+class="w-20 h-20 rounded object-cover">
+
+<div class="flex-1 w-full">
+
+<p class="font-medium">
+Sáo Trúc Bát Khổng
+</p>
+
+<p class="text-sm text-gray-500">
+Số lượng: 2
+</p>
+
+</div>
+
+<div class="font-semibold text-[#9A3F0F]">
+600.000đ
+</div>
+
+</div>
+
+<div class="flex justify-between items-center mt-4 border-t pt-4">
+
+<div class="text-sm text-gray-500">
+Ngày đặt: 01/03/2026
+</div>
+
+<div class="flex gap-3">
+
+<button
+class="bg-[#9A3F0F] text-white px-5 py-2 rounded-lg hover:bg-[#7C2D12]">
+Mua lại
+</button>
+
+<button
+class="px-4 py-2 border rounded-lg text-sm hover:bg-gray-100">
+Xem chi tiết
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
