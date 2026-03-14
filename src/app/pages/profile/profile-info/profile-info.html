@@ -90,56 +90,80 @@
     </div>
 
     <!-- ADDRESS BOOK -->
-    <div class="mt-10">
-      <div class="flex justify-between items-center mb-4">
-        <h3 class="text-lg font-semibold">Sổ địa chỉ</h3>
-        <button
-          (click)="addAddress()"
-          class="bg-[#9A3F0F] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#7C2D12]">
-          + Thêm địa chỉ
-        </button>
-      </div>
+<div class="mt-10">
+  <div class="flex justify-between items-center mb-4">
+    <h3 class="text-lg font-semibold">Sổ địa chỉ</h3>
+    <button
+      (click)="addAddress()"
+      class="bg-[#9A3F0F] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#7C2D12]">
+      + Thêm địa chỉ
+    </button>
+  </div>
 
-      <div *ngIf="isLoadingAddresses" class="text-center py-4">
-        <p>Đang tải địa chỉ...</p>
-      </div>
+  <div *ngIf="isLoadingAddresses" class="text-center py-4">
+    <p>Đang tải địa chỉ...</p>
+  </div>
 
-      <div *ngIf="!isLoadingAddresses && addresses.length === 0" class="text-center py-4 text-gray-500">
-        <p>Bạn chưa có địa chỉ nào.</p>
-      </div>
+  <div *ngIf="!isLoadingAddresses && addresses.length === 0" class="text-center py-4 text-gray-500">
+    <p>Bạn chưa có địa chỉ nào.</p>
+  </div>
 
-      <div class="space-y-4">
-        <!-- ADDRESS ITEM -->
-        <div *ngFor="let address of addresses"
-             class="border border-[#E5D3B3] rounded-lg p-4 flex justify-between items-start"
-             [class.bg-[#FAF7F2]]="address.macDinh">
+  <div class="space-y-4">
+    <!-- ADDRESS ITEM -->
+    <div *ngFor="let address of addresses"
+         class="border border-[#E5D3B3] rounded-lg overflow-hidden"
+         [class.bg-[#FAF7F2]]="address.macDinh">
+
+      <!-- Click vào phần này để đặt mặc định -->
+      <div class="p-4 cursor-pointer hover:bg-[#FAF7F2]/50 transition-colors"
+           (click)="!address.macDinh && setDefaultAddress(address.id)">
+
+        <div class="flex justify-between items-start">
           <div class="flex-1">
-            <p class="font-medium">{{ address.tenNguoiNhan }}</p>
+            <p class="font-medium">{{ address.hoTenNguoiNhan }}</p>
             <p class="text-sm text-gray-600">{{ address.soDienThoai }}</p>
             <p class="text-sm text-gray-600">{{ address.diaChiChiTiet }}</p>
-            <span *ngIf="address.macDinh"
-                  class="text-xs bg-[#9A3F0F] text-white px-2 py-1 rounded mt-2 inline-block">
-              Mặc định
-            </span>
+            <p class="text-xs text-gray-500 mt-1">
+              {{ address.phuongXa }}, {{ address.quanHuyen }}, {{ address.thanhPho }}
+            </p>
           </div>
-          <div class="flex gap-2">
-            <button (click)="editAddress(address.id)"
-                    class="text-sm text-[#9A3F0F] hover:underline">
-              Sửa
-            </button>
-            <button *ngIf="!address.macDinh"
-                    (click)="setDefaultAddress(address.id)"
-                    class="text-sm text-blue-600 hover:underline">
-              Đặt mặc định
-            </button>
-            <button *ngIf="!address.macDinh"
-                    (click)="deleteAddress(address.id)"
-                    class="text-sm text-red-600 hover:underline">
-              Xóa
-            </button>
-          </div>
+
+          <!-- Badge mặc định -->
+          <span *ngIf="address.macDinh"
+                class="text-xs bg-[#9A3F0F] text-white px-2 py-1 rounded">
+            Mặc định
+          </span>
         </div>
+      </div>
+
+      <!-- Action buttons - tách riêng -->
+      <div class="flex justify-end gap-2 px-4 pb-4">
+        <button (click)="editAddress(address.id)"
+                class="text-sm text-[#9A3F0F] hover:underline flex items-center gap-1">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+          Sửa
+        </button>
+
+        <button *ngIf="!address.macDinh"
+                (click)="deleteAddress(address.id)"
+                class="text-sm text-red-600 hover:underline flex items-center gap-1">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+          Xóa
+        </button>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Address Modal -->
+<app-address-modal
+  *ngIf="showAddressModal"
+  [addressId]="editingAddressId"
+  [addressData]="editingAddressData"
+  (close)="handleAddressModalClose()"
+  (save)="handleAddressModalSave($event)">
+</app-address-modal>

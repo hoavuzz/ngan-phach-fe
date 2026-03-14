@@ -1,0 +1,180 @@
+<!-- Modal overlay -->
+<div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+     (click)="onClose()">
+
+  <!-- Modal content -->
+  <div class="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+       (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="flex justify-between items-center p-6 border-b">
+      <h3 class="text-xl font-semibold">
+        {{ addressId ? 'Sửa địa chỉ' : 'Thêm địa chỉ mới' }}
+      </h3>
+
+      <button (click)="onClose()" class="text-gray-500 hover:text-gray-700">
+        ✕
+      </button>
+    </div>
+
+    <!-- Form -->
+    <div class="p-6">
+      <div class="grid grid-cols-2 gap-4">
+
+        <!-- Cột 1 -->
+        <div class="space-y-4">
+          <!-- Họ tên -->
+          <div>
+            <label class="block text-sm font-medium mb-1">
+              Họ tên người nhận <span class="text-red-500">*</span>
+            </label>
+
+            <input
+              type="text"
+              [(ngModel)]="formData.hoTenNguoiNhan"
+              class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#9A3F0F] focus:outline-none"
+              placeholder="Nhập họ tên">
+          </div>
+
+          <!-- Địa chỉ chi tiết -->
+          <div>
+            <label class="block text-sm font-medium mb-1">
+              Địa chỉ chi tiết <span class="text-red-500">*</span>
+            </label>
+
+            <input
+              type="text"
+              [(ngModel)]="formData.diaChiChiTiet"
+              class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#9A3F0F] focus:outline-none"
+              placeholder="Số nhà, tên đường">
+          </div>
+
+          <!-- Tỉnh -->
+          <div>
+            <label class="block text-sm font-medium mb-1">
+              Tỉnh / Thành phố <span class="text-red-500">*</span>
+            </label>
+
+            <select
+              [(ngModel)]="selectedProvince"
+              (change)="onProvinceChange(selectedProvince)"
+              class="w-full border rounded-lg px-3 py-2 bg-white focus:ring-2 focus:ring-[#9A3F0F] focus:outline-none"
+            >
+              <option [ngValue]="null">-- Chọn tỉnh/thành --</option>
+              <option
+                *ngFor="let p of provinces"
+                [ngValue]="p"
+              >
+                {{ p.name }}
+              </option>
+            </select>
+
+            <div *ngIf="loadingProvinces" class="text-xs text-gray-500 mt-1">
+              Đang tải tỉnh/thành...
+            </div>
+          </div>
+        </div>
+
+        <!-- Cột 2 -->
+        <div class="space-y-4">
+          <!-- SĐT -->
+          <div>
+            <label class="block text-sm font-medium mb-1">
+              Số điện thoại <span class="text-red-500">*</span>
+            </label>
+
+            <input
+              type="tel"
+              [(ngModel)]="formData.soDienThoai"
+              class="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#9A3F0F] focus:outline-none"
+              placeholder="Nhập số điện thoại">
+          </div>
+
+          <!-- Quận/Huyện -->
+          <div>
+            <label class="block text-sm font-medium mb-1">
+              Quận / Huyện
+            </label>
+
+            <select
+              [(ngModel)]="selectedDistrict"
+              (change)="onDistrictChange(selectedDistrict)"
+              [disabled]="!selectedProvince || loadingDistricts"
+              class="w-full border rounded-lg px-3 py-2 bg-white focus:ring-2 focus:ring-[#9A3F0F] focus:outline-none disabled:bg-gray-100"
+            >
+              <option [ngValue]="null">-- Chọn quận/huyện --</option>
+              <option
+                *ngFor="let d of districts"
+                [ngValue]="d"
+              >
+                {{ d.name }}
+              </option>
+            </select>
+
+            <div *ngIf="loadingDistricts" class="text-xs text-gray-500 mt-1">
+              Đang tải quận/huyện...
+            </div>
+          </div>
+
+          <!-- Phường/Xã -->
+          <div>
+            <label class="block text-sm font-medium mb-1">
+              Phường / Xã
+            </label>
+
+            <select
+              [(ngModel)]="selectedWard"
+              (change)="onWardChange(selectedWard)"
+              [disabled]="!selectedDistrict || loadingWards"
+              class="w-full border rounded-lg px-3 py-2 bg-white focus:ring-2 focus:ring-[#9A3F0F] focus:outline-none disabled:bg-gray-100"
+            >
+              <option [ngValue]="null">-- Chọn phường/xã --</option>
+              <option
+                *ngFor="let w of wards"
+                [ngValue]="w"
+              >
+                {{ w.name }}
+              </option>
+            </select>
+
+            <div *ngIf="loadingWards" class="text-xs text-gray-500 mt-1">
+              Đang tải phường/xã...
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Địa chỉ mặc định (full width) -->
+      <div class="flex items-center mt-4 pt-4 border-t">
+        <input
+          type="checkbox"
+          [(ngModel)]="formData.macDinh"
+          class="mr-2 w-4 h-4 text-[#9A3F0F] border-gray-300 rounded focus:ring-[#9A3F0F]"
+        >
+
+        <span class="text-sm">
+          Đặt làm địa chỉ mặc định
+        </span>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="flex justify-end gap-3 p-6 border-t">
+      <button
+        (click)="onClose()"
+        class="px-4 py-2 border rounded-lg hover:bg-gray-50 transition-colors"
+      >
+        Hủy
+      </button>
+
+      <button
+        (click)="onSubmit()"
+        [disabled]="!isValidForm()"
+        class="px-4 py-2 bg-[#9A3F0F] text-white rounded-lg hover:bg-[#7C2D12] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+      >
+        {{ addressId ? 'Cập nhật' : 'Thêm mới' }}
+      </button>
+    </div>
+
+  </div>
+</div>

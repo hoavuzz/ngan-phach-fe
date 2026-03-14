@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef, ViewChild, ElementRef } from '@an
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { User } from '../../../services/user';
+import { AddressModal } from '../../../components/address-modal/address-modal'; // Import AddressModal
 
 interface UserProfile {
   hoTen: string;
@@ -13,16 +14,20 @@ interface UserProfile {
 
 interface Address {
   id: number;
-  tenNguoiNhan: string;
+  hoTenNguoiNhan: string;
   soDienThoai: string;
   diaChiChiTiet: string;
+  phuongXa?: string;
+  quanHuyen?: string;
+  thanhPho?: string;
+  quocGia?: string;
   macDinh: boolean;
 }
 
 @Component({
   selector: 'app-profile-info',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, AddressModal], // Thêm AddressModal vào imports
   templateUrl: './profile-info.html',
   styleUrl: './profile-info.css',
 })
@@ -30,6 +35,9 @@ export class ProfileInfo implements OnInit {
   @ViewChild('avatarInput') avatarInput!: ElementRef;
 
   editing = false;
+  showAddressModal = false; // Thêm biến này
+  editingAddressId: number | null = null; // Thêm biến này
+  editingAddressData: any = null; // Thêm biến này
 
   originalData = {
     hoTen: '',
@@ -196,12 +204,10 @@ export class ProfileInfo implements OnInit {
 
   uploadAvatar(file: File): void {
     const formData = new FormData();
-    // QUAN TRỌNG: Phải dùng field name 'image' vì backend dùng upload.single('image')
-    formData.append('image', file); // <-- Sửa từ 'avatar' thành 'image'
+    formData.append('image', file);
 
     console.log('Uploading file:', file.name, 'size:', file.size);
 
-    // Log form data để kiểm tra
     formData.forEach((value, key) => {
       console.log('FormData:', key, value);
     });
@@ -210,8 +216,6 @@ export class ProfileInfo implements OnInit {
       next: (res: any) => {
         console.log('Upload avatar thành công:', res);
         if (res?.url) {
-          // Backend trả về url dạng: /uploads/users/filename.jpg
-          // Cần tạo full URL
           const fullUrl = `http://localhost:3000${res.url}`;
           this.avatarPreview = fullUrl;
           this.saveProfileAfterAvatar(fullUrl);
@@ -233,7 +237,7 @@ export class ProfileInfo implements OnInit {
     const updateData = {
       hoTen: this.hoTen,
       soDienThoai: this.soDienThoai,
-      anhDaiDien: avatarUrl, // Lưu full URL vào database
+      anhDaiDien: avatarUrl,
     };
 
     this.userService.updateProfile(updateData).subscribe({
@@ -241,7 +245,6 @@ export class ProfileInfo implements OnInit {
         console.log('Cập nhật avatar thành công');
         this.originalData.anhDaiDien = avatarUrl;
 
-        // Cập nhật user trong localStorage
         const currentUser = this.userService.getUser();
         if (currentUser) {
           currentUser.anhDaiDien = avatarUrl;
@@ -266,14 +269,56 @@ export class ProfileInfo implements OnInit {
     );
   }
 
+  // CÁC PHƯƠNG THỨC XỬ LÝ ĐỊA CHỈ
   addAddress(): void {
-    console.log('Thêm địa chỉ mới');
-    // TODO: Implement add address modal
+    this.editingAddressId = null;
+    this.editingAddressData = null;
+    this.showAddressModal = true;
   }
 
   editAddress(addressId: number): void {
-    console.log('Sửa địa chỉ:', addressId);
-    // TODO: Implement edit address modal
+    const address = this.addresses.find((a) => a.id === addressId);
+    if (address) {
+      this.editingAddressId = addressId;
+      this.editingAddressData = { ...address };
+      this.showAddressModal = true;
+    }
+  }
+
+  handleAddressModalClose(): void {
+    this.showAddressModal = false;
+    this.editingAddressId = null;
+    this.editingAddressData = null;
+  }
+
+  handleAddressModalSave(addressData: any): void {
+    if (this.editingAddressId) {
+      // Sửa địa chỉ
+      this.userService.updateAddress(this.editingAddressId, addressData).subscribe({
+        next: () => {
+          alert('Cập nhật địa chỉ thành công!');
+          this.showAddressModal = false;
+          this.loadAddresses();
+        },
+        error: (err: any) => {
+          console.error('Lỗi cập nhật địa chỉ:', err);
+          alert(err.error?.message || 'Có lỗi xảy ra');
+        },
+      });
+    } else {
+      // Thêm địa chỉ mới
+      this.userService.addAddress(addressData).subscribe({
+        next: (res: any) => {
+          alert('Thêm địa chỉ thành công!');
+          this.showAddressModal = false;
+          this.loadAddresses();
+        },
+        error: (err: any) => {
+          console.error('Lỗi thêm địa chỉ:', err);
+          alert(err.error?.message || 'Có lỗi xảy ra');
+        },
+      });
+    }
   }
 
   setDefaultAddress(addressId: number): void {
