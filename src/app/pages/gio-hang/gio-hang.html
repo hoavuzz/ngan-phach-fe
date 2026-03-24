@@ -17,7 +17,7 @@
         <div class="bg-white rounded-xl shadow-sm p-4 flex items-center justify-between">
           <label class="flex items-center gap-3 cursor-pointer">
             <input type="checkbox" class="w-4 h-4 accent-red-800" />
-            <span class="font-medium text-gray-700">Chọn tất cả (3 sản phẩm)</span>
+            <span class="font-medium text-gray-700">Chọn tất cả ({{cartItems.length}} sản phẩm)</span>
           </label>
           <button class="text-sm text-red-800 hover:text-red-900 transition">Xóa đã chọn</button>
         </div>
@@ -43,9 +43,11 @@
                     <span *ngIf="item.originalPrice" class="text-sm text-gray-400 line-through">{{ item.originalPrice | number }}₫</span>
                   </div>
                 </div>
-                <button class="text-gray-300 hover:text-red-800 transition flex-shrink-0">
-                  <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
+              <button 
+(click)="removeItem(item.id)"
+class="text-gray-300 hover:text-red-800 transition flex-shrink-0">
+  <i class="fa-solid fa-xmark text-lg"></i>
+</button>
               </div>
 
               <!-- Số lượng + tạm tính -->

@@ -1,32 +1,57 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CartService {
 
-  apiUrl = 'http://localhost:3000/cart';
+  apiUrl = "http://localhost:3000/api/giohang";
+  isBrowser:boolean;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http:HttpClient,
+    @Inject(PLATFORM_ID) private platformId:object
+  ) {
+    this.isBrowser = isPlatformBrowser(platformId);
+  }
+addToDatabase(data:any){
 
-  getCart() {
-    return JSON.parse(localStorage.getItem('cart') || '[]');
+  return this.http.post("http://localhost:3000/api/giohang",data);
+
+}
+  // lấy cart từ localStorage
+  getCart(){
+
+    if(!this.isBrowser) return [];
+
+    return JSON.parse(localStorage.getItem("cart") || "[]");
+
   }
 
-  saveCart(cart: any) {
-    localStorage.setItem('cart', JSON.stringify(cart));
+  // lưu cart
+  saveCart(cart:any){
+
+    if(!this.isBrowser) return;
+
+    localStorage.setItem("cart",JSON.stringify(cart));
+
   }
 
-  addToCart(product: any) {
+  // thêm sản phẩm
+  addToCart(product:any){
 
     let cart = this.getCart();
 
-    let index = cart.findIndex((p: any) => p.id === product.id);
+    let index = cart.findIndex((p:any)=>p.id === product.id);
 
-    if (index !== -1) {
+    if(index !== -1){
+
       cart[index].quantity += 1;
-    } else {
+
+    }else{
+
       cart.push({
         id: product.id,
         name: product.name,
@@ -35,34 +60,46 @@ export class CartService {
         quantity: 1,
         selected: true
       });
+
     }
 
     this.saveCart(cart);
+
   }
 
-  removeItem(id: number) {
-    let cart = this.getCart();
-    cart = cart.filter((p: any) => p.id !== id);
-    this.saveCart(cart);
-  }
-
+  // cập nhật giỏ hàng
   updateCart(cart:any){
     this.saveCart(cart);
   }
 
+  // xoá sản phẩm
+  removeItem(id:number){
+
+    let cart = this.getCart();
+
+    cart = cart.filter((item:any)=>item.id !== id);
+
+    this.saveCart(cart);
+
+  }
+
+  // gửi giỏ hàng lên database sau khi login
   syncCart(userId:number){
 
     const cart = this.getCart();
 
-    const body = {
-      userId:userId,
-      products:cart.map((p:any)=>({
-        productId:p.id,
-        quantity:p.quantity
-      }))
-    }
+    cart.forEach((item:any)=>{
 
-    return this.http.post(this.apiUrl,body);
+      const body = {
+        userId:userId,
+        productId:item.id,
+        quantity:item.quantity
+      }
+
+      this.http.post(this.apiUrl,body).subscribe();
+
+    });
+
   }
 
 }
