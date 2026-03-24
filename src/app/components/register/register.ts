@@ -1,41 +1,38 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { User } from '../../services/user';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './register.html',
-  styleUrl: './register.css'
+  styleUrls: ['./register.css']
 })
 export class Register {
 
   user = {
     tenDangNhap:'',
-    email:'',
-    matKhau:'',
-    hoTen:'',
-    soDienThoai:''
+    email: '',
+    matKhau: '',
+    hoTen: '',
+    soDienThoai: ''
   }
 
-  constructor(private userService:User){}
+  constructor(private userService: User) { }
 
-  register(){
+  register() {
 
-    this.userService.register(this.user).subscribe((res:any)=>{
-      console.log(res) // kiểm tra dữ liệu trả về
-      // lưu token
-    localStorage.setItem("accessToken", res.accessToken);
-    localStorage.setItem("refreshToken", res.refreshToken);
+    this.userService.register(this.user).subscribe((res: any) => {
 
-        // lưu user
-    localStorage.setItem('user', JSON.stringify(res.nguoiDung))
+      localStorage.setItem("accessToken", res.accessToken);
+      localStorage.setItem("refreshToken", res.refreshToken);
+      localStorage.setItem('user', JSON.stringify(res.nguoiDung))
 
-    alert(res.message);
+      alert(res.message);
 
-
-    },err=>{
+    }, err => {
 
       alert(err.error.message)
 

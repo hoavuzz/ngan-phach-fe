@@ -8,28 +8,35 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [FormsModule],
   templateUrl: './login.html',
-  styleUrl: './login.css',
+  styleUrl: './login.css'
 })
 export class Login {
+
   user = {
     email: '',
-    matKhau: '',
-  };
+    matKhau: ''
+  }
 
-  constructor(
-    private userService: User,
-    private router: Router,
-  ) {}
+  constructor(private userService: User, private router: Router) { }
 
   login() {
-    this.userService.login(this.user).subscribe(
-      (res: any) => {
-        alert(res.message);
-        this.router.navigate(['/']);
-      },
-      (err) => {
-        alert(err?.error?.message || 'Đăng nhập thất bại');
-      },
-    );
+    console.log(this.user)   // xem dữ liệu gửi đi
+    this.userService.login(this.user).subscribe((res: any) => {
+
+      localStorage.setItem('accessToken', res.accessToken);
+      localStorage.setItem('refreshToken', res.refreshToken);
+      localStorage.setItem('user', JSON.stringify(res.nguoiDung));
+      
+      alert(res.message)
+
+      this.router.navigate(['/'])
+
+    }, err => {
+      console.log(err)
+      alert(err.error.message)
+
+    })
+
   }
+
 }

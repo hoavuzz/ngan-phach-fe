@@ -21,7 +21,7 @@
       </div>
 
       <!-- FORM ANGULAR -->
-      <form class="login-form" #f="ngForm" (ngSubmit)="login()" novalidate>
+      <form class="login-form" (ngSubmit)="login()">
 
         <!-- EMAIL -->
         <div class="form-group">
@@ -68,7 +68,7 @@
             <span>Ghi nhớ đăng nhập</span>
           </label>
 
-          <a href="" class="forgot-password">
+          <a href="/forgot-password" class="forgot-password">
             Quên mật khẩu?
           </a>
 
@@ -76,7 +76,7 @@
 
 
         <!-- BUTTON -->
-        <button type="submit" class="btn-login" [disabled]="f.invalid">
+        <button type="submit" class="btn-login">
           <span class="btn-text">Đăng Nhập</span>
         </button>
 

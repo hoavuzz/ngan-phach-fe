@@ -1,55 +1,63 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { CartService } from '../../services/cart.service';
 
 @Component({
   selector: 'app-gio-hang',
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './gio-hang.html',
-  styleUrls: ['./gio-hang.css'],
+  styleUrl: './gio-hang.css',
 })
-export class GioHang implements OnInit {
-
-  cartItems:any[] = [];
-
-  constructor(private cartService: CartService){}
-
-  ngOnInit(){
-    this.loadCart();
-  }
-
-  loadCart(){
-    this.cartItems = this.cartService.getCart();
-  }
+export class GioHang {
+  cartItems = [
+    {
+      id: 1,
+      name: 'Đàn Tranh 16 Dây Gỗ Hương Cao Cấp',
+      variant: 'Loại gỗ: Gỗ Hương | Kích thước: 1.6m',
+      price: 12500000,
+      originalPrice: 15000000,
+      quantity: 1,
+      selected: true,
+      imageUrl: 'https://via.placeholder.com/150',
+    },
+    {
+      id: 2,
+      name: 'Đàn Nguyệt Truyền Thống',
+      variant: 'Loại gỗ: Gỗ Gụ',
+      price: 8200000,
+      originalPrice: null,
+      quantity: 1,
+      selected: true,
+      imageUrl: 'https://via.placeholder.com/150',
+    },
+    {
+      id: 3,
+      name: 'Sáo Trúc Mường Hòa Cao Cấp',
+      variant: 'Tone: Đô (C)',
+      price: 450000,
+      originalPrice: null,
+      quantity: 2,
+      selected: true,
+      imageUrl: 'https://via.placeholder.com/150',
+    },
+  ];
 
   get subtotal(): number {
     return this.cartItems
-      .filter(i => i.selected)
+      .filter((i) => i.selected)
       .reduce((sum, i) => sum + i.price * i.quantity, 0);
   }
 
   get discount(): number {
-    return 0;
+    return 2500000;
   }
 
-  increase(item:any){
+  increase(item: any) {
     item.quantity++;
-    this.cartService.updateCart(this.cartItems);
   }
-
-  decrease(item:any){
-    if(item.quantity > 1){
-      item.quantity--;
-      this.cartService.updateCart(this.cartItems);
-    }
+  decrease(item: any) {
+    if (item.quantity > 1) item.quantity--;
   }
-
-  removeItem(id:number){
-    this.cartService.removeItem(id);
-    this.loadCart();
-  }
-
 }

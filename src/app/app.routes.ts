@@ -3,9 +3,6 @@ import { HomePage } from './pages/home/home';
 import { GioHang } from './pages/gio-hang/gio-hang';
 import { Login } from './components/login/login';
 import { Register } from './components/register/register';
-import { Orders } from './pages/profile/orders/orders';
-import { ProfileInfo } from './pages/profile/profile-info/profile-info';
-import { ProfileLayout } from './pages/profile/profile-layout/profile-layout';
 
 export const routes: Routes = [
   {
@@ -20,23 +17,19 @@ export const routes: Routes = [
     path: 'login',
     component: Login,
   },
-  {
+    {
     path: 'register',
     component: Register,
   },
-  {
-    path: 'trang-ca-nhan',
-    component: ProfileLayout,
-    children: [
-      {
-        path: '',
-        component: ProfileInfo,
-      },
+{
+  path:'forgot-password',
+  loadComponent:()=>import('./components/forgot-password/forgot-password')
+  .then(m=>m.ForgotPassword)
+},
 
-      {
-        path: 'don-hang-cua-toi',
-        component: Orders,
-      },
-    ],
-  },
+{
+  path:'reset-password/:token',
+  loadComponent:()=>import('./components/reset-password/reset-password')
+  .then(m=>m.ResetPassword)
+}
 ];
