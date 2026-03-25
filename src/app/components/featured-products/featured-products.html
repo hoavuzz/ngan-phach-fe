@@ -1,0 +1,22 @@
+<section class="py-20 bg-neutral-100">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex justify-between items-center mb-10">
+        <h2 class="text-2xl font-semibold text-neutral-800">
+          Sản phẩm nổi bật
+        </h2>
+        <button class="text-amber-700 hover:underline">
+          Xem thêm
+        </button>
+      </div>
+
+      <div class="grid md:grid-cols-4 gap-6">
+
+        <app-product-card
+          *ngFor="let product of displayedProducts"
+          [product]="product"
+          badge="HOT">
+        </app-product-card>
+
+      </div>
+    </div>
+  </section>

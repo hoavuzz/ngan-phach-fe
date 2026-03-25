@@ -1,0 +1,109 @@
+<main class="main-content">
+  <div class="login-container">
+
+    <!-- Left Side -->
+    <div class="login-image">
+      <div class="image-content">
+        <h2>Chào mừng trở lại!</h2>
+        <p>
+          Đăng nhập để khám phá bộ sưu tập nhạc cụ truyền thống Việt Nam
+          phong phú nhất với hàng ngàn sản phẩm chất lượng cao.
+        </p>
+      </div>
+    </div>
+
+    <!-- Right Side -->
+    <div class="login-form-container">
+
+      <div class="form-header">
+        <h2>Đăng Nhập</h2>
+        <p>Nhập thông tin tài khoản của bạn để tiếp tục</p>
+      </div>
+
+      <!-- FORM ANGULAR -->
+      <form class="login-form" #f="ngForm" (ngSubmit)="login()">
+
+        <!-- EMAIL -->
+        <div class="form-group">
+  <label>Email</label>
+
+  <div class="input-wrapper">
+    <input
+      type="email"
+      name="email"
+      [(ngModel)]="user.email"
+      #email="ngModel"
+      placeholder="Nhập địa chỉ email"
+      required
+      email
+      [class.input-error]="email.invalid && email.touched"
+    >
+  </div>
+
+  <p class="error" *ngIf="email.touched && email.invalid">
+    <span *ngIf="email.errors?.['required']">Email không được để trống</span>
+    <span *ngIf="email.errors?.['email']">Email không hợp lệ</span>
+  </p>
+</div>
+
+
+        <!-- PASSWORD -->
+        <div class="form-group">
+  <label>Mật khẩu</label>
+
+  <div class="input-wrapper">
+    <input
+      type="password"
+      name="matKhau"
+      [(ngModel)]="user.matKhau"
+      #matKhau="ngModel"
+      placeholder="Nhập mật khẩu"
+      required
+      minlength="6"
+      [class.input-error]="matKhau.invalid && matKhau.touched"
+    >
+  </div>
+
+  <p class="error" *ngIf="matKhau.touched && matKhau.invalid">
+    <span *ngIf="matKhau.errors?.['required']">Mật khẩu không được để trống</span>
+    <span *ngIf="matKhau.errors?.['minlength']">Ít nhất 6 ký tự</span>
+  </p>
+</div>
+
+
+        <!-- OPTIONS -->
+        <div class="form-options">
+
+          <label class="remember-me">
+            <input type="checkbox">
+            <span class="checkmark"></span>
+            <span>Ghi nhớ đăng nhập</span>
+          </label>
+
+          <a href="/forgot-password" class="forgot-password">
+            Quên mật khẩu?
+          </a>
+
+        </div>
+
+        <p class="error" *ngIf="errorMessage">
+  {{ errorMessage }}
+</p>
+        <!-- BUTTON -->
+<button type="submit" class="btn-login" [disabled]="f.invalid">
+  Đăng Nhập
+</button>
+
+
+        <!-- REGISTER -->
+        <p class="register-link">
+          Chưa có tài khoản?
+          <a routerLink="/register">Đăng ký ngay</a>
+        </p>
+
+      </form>
+
+    </div>
+
+  </div>
+</main>
