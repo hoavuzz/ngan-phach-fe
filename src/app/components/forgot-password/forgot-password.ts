@@ -1,31 +1,31 @@
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { User } from '../../services/user';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './forgot-password.html',
-  styleUrls: ['./forgot-password.css']
+  styleUrl: './forgot-password.css',
 })
 export class ForgotPassword {
 
   email = '';
+  message = '';
+  error = '';
 
-  constructor(private userService:User){}
+  constructor(private userService: User) {}
 
-  send(){
-
-    this.userService.forgotPassword({email:this.email})
-    .subscribe((res:any)=>{
-
-      alert(res.message)
-
-    },err=>{
-      alert(err.error.message)
-    })
-
+  send() {
+    this.userService.forgotPassword({ email: this.email })
+      .subscribe((res:any) => {
+        this.message = res.message;
+        this.error = '';
+      }, err => {
+        this.error = err.error.message;
+        this.message = '';
+      });
   }
-
 }

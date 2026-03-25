@@ -21,42 +21,54 @@
       </div>
 
       <!-- FORM ANGULAR -->
-      <form class="login-form" (ngSubmit)="login()">
+      <form class="login-form" #f="ngForm" (ngSubmit)="login()">
 
         <!-- EMAIL -->
         <div class="form-group">
+  <label>Email</label>
 
-          <label>Email</label>
+  <div class="input-wrapper">
+    <input
+      type="email"
+      name="email"
+      [(ngModel)]="user.email"
+      #email="ngModel"
+      placeholder="Nhập địa chỉ email"
+      required
+      email
+      [class.input-error]="email.invalid && email.touched"
+    >
+  </div>
 
-          <div class="input-wrapper">
-            <input
-              type="email"
-              name="email"
-              [(ngModel)]="user.email"
-              placeholder="Nhập địa chỉ email"
-              required
-            >
-          </div>
-
-        </div>
+  <p class="error" *ngIf="email.touched && email.invalid">
+    <span *ngIf="email.errors?.['required']">Email không được để trống</span>
+    <span *ngIf="email.errors?.['email']">Email không hợp lệ</span>
+  </p>
+</div>
 
 
         <!-- PASSWORD -->
         <div class="form-group">
+  <label>Mật khẩu</label>
 
-          <label>Mật khẩu</label>
+  <div class="input-wrapper">
+    <input
+      type="password"
+      name="matKhau"
+      [(ngModel)]="user.matKhau"
+      #matKhau="ngModel"
+      placeholder="Nhập mật khẩu"
+      required
+      minlength="6"
+      [class.input-error]="matKhau.invalid && matKhau.touched"
+    >
+  </div>
 
-          <div class="input-wrapper">
-            <input
-              type="password"
-              name="matKhau"
-              [(ngModel)]="user.matKhau"
-              placeholder="Nhập mật khẩu"
-              required
-            >
-          </div>
-
-        </div>
+  <p class="error" *ngIf="matKhau.touched && matKhau.invalid">
+    <span *ngIf="matKhau.errors?.['required']">Mật khẩu không được để trống</span>
+    <span *ngIf="matKhau.errors?.['minlength']">Ít nhất 6 ký tự</span>
+  </p>
+</div>
 
 
         <!-- OPTIONS -->
@@ -74,11 +86,13 @@
 
         </div>
 
-
+        <p class="error" *ngIf="errorMessage">
+  {{ errorMessage }}
+</p>
         <!-- BUTTON -->
-        <button type="submit" class="btn-login">
-          <span class="btn-text">Đăng Nhập</span>
-        </button>
+<button type="submit" class="btn-login" [disabled]="f.invalid">
+  Đăng Nhập
+</button>
 
 
         <!-- REGISTER -->

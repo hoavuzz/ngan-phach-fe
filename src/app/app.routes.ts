@@ -3,6 +3,8 @@ import { HomePage } from './pages/home/home';
 import { GioHang } from './pages/gio-hang/gio-hang';
 import { Login } from './components/login/login';
 import { Register } from './components/register/register';
+import { ForgotPassword } from './components/forgot-password/forgot-password';
+import { ResetPassword } from './components//reset-password/reset-password';
 
 export const routes: Routes = [
   {
@@ -21,15 +23,12 @@ export const routes: Routes = [
     path: 'register',
     component: Register,
   },
-{
-  path:'forgot-password',
-  loadComponent:()=>import('./components/forgot-password/forgot-password')
-  .then(m=>m.ForgotPassword)
-},
-
-{
-  path:'reset-password/:token',
-  loadComponent:()=>import('./components/reset-password/reset-password')
-  .then(m=>m.ResetPassword)
-}
+  {
+    path: 'forgot-password',
+    component: ForgotPassword,
+  },
+  {
+    path: 'reset-password',
+    component: ResetPassword,
+  }
 ];

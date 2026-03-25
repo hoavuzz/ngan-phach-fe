@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { User } from '../../services/user';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -13,26 +14,47 @@ import { CommonModule } from '@angular/common';
 export class Register {
 
   user = {
-    tenDangNhap:'',
     email: '',
     matKhau: '',
     hoTen: '',
     soDienThoai: ''
   }
 
-  constructor(private userService: User) { }
+  confirmPassword = '';
 
-  register() {
+  constructor(private userService: User, private router: Router) {}
 
-    this.userService.register(this.user).subscribe((res: any) => {
+  // 📱 format số điện thoại +84
+  // formatPhone() {
 
-      localStorage.setItem("accessToken", res.accessToken);
-      localStorage.setItem("refreshToken", res.refreshToken);
-      localStorage.setItem('user', JSON.stringify(res.nguoiDung))
+  //   if(this.user.soDienThoai.startsWith("0")){
+  //     this.user.soDienThoai = "+84" + this.user.soDienThoai.substring(1);
+  //   }
+
+  // }
+
+  register(form:any){
+
+    if(form.invalid){
+      alert("Vui lòng nhập đúng thông tin");
+      return;
+    }
+
+    // if(this.user.matKhau !== this.confirmPassword){
+    //   alert("Mật khẩu xác nhận không khớp");
+    //   return;
+    // }
+
+    // this.formatPhone();
+
+    this.userService.register(this.user).subscribe((res:any)=>{
 
       alert(res.message);
 
-    }, err => {
+      // chuyển sang login
+      this.router.navigate(['/'])
+
+    }, err=>{
 
       alert(err.error.message)
 

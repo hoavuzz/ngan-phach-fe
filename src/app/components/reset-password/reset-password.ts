@@ -1,46 +1,38 @@
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { User } from '../../services/user';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [FormsModule],
-  templateUrl: './reset-password.html'
+  imports: [FormsModule, CommonModule],
+  templateUrl: './reset-password.html',
+  styleUrl: './reset-password.css',
 })
 export class ResetPassword {
 
   matKhauMoi = '';
   token = '';
+  message = '';
+  error = '';
 
-  constructor(
-    private route:ActivatedRoute,
-    private userService:User,
-    private router:Router
-  ){}
-
-  ngOnInit(){
-
-    this.token = this.route.snapshot.paramMap.get('token')!
-
+  constructor(private route: ActivatedRoute, private userService: User) {
+    this.token = this.route.snapshot.queryParamMap.get('token') || '';
   }
 
-  reset(){
-
+  reset() {
     this.userService.resetPassword({
-      token:this.token,
-      matKhauMoi:this.matKhauMoi
-    }).subscribe((res:any)=>{
-
-      alert(res.message)
-
-      this.router.navigate(['/login'])
-
-    },err=>{
-      alert(err.error.message)
-    })
-
+      token: this.token,
+      matKhauMoi: this.matKhauMoi
+    }).subscribe((res:any) => {
+      this.message = res.message;
+      this.error = '';
+    }, err => {
+      this.error = err.error.message;
+      this.message = '';
+    });
+    console.log("TOKEN FRONTEND:", this.token);
   }
-
 }

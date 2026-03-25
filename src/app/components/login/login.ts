@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { User } from '../../services/user';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule,CommonModule],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
@@ -19,24 +20,26 @@ export class Login {
 
   constructor(private userService: User, private router: Router) { }
 
-  login() {
-    console.log(this.user)   // xem dữ liệu gửi đi
-    this.userService.login(this.user).subscribe((res: any) => {
+  errorMessage: string = '';
 
+login() {
+  this.errorMessage = ''; // reset lỗi
+
+  this.userService.login(this.user).subscribe(
+    (res: any) => {
       localStorage.setItem('accessToken', res.accessToken);
       localStorage.setItem('refreshToken', res.refreshToken);
       localStorage.setItem('user', JSON.stringify(res.nguoiDung));
-      
-      alert(res.message)
 
-      this.router.navigate(['/'])
+      this.router.navigate(['/']);
+    },
+    (err) => {
+      console.log(err);
 
-    }, err => {
-      console.log(err)
-      alert(err.error.message)
-
-    })
-
-  }
+      // 🔥 lấy lỗi từ backend
+      this.errorMessage = err.error?.message || 'Đăng nhập thất bại';
+    }
+  );
+}
 
 }
