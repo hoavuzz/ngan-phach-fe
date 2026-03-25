@@ -5,7 +5,7 @@ import { catchError, switchMap, throwError } from 'rxjs';
 import { User } from '../services/user';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const userService = inject(User);
+  const userService = inject(User as any);
   const platformId = inject(PLATFORM_ID);
 
   console.log('Interceptor - Request URL:', req.url); // Thêm log
