@@ -1,0 +1,83 @@
+/* Background toàn trang */
+main{
+  background:#fafafa;
+}
+
+/* Card */
+.bg-white{
+  border:1px solid #f3f4f6;
+  transition:all 0.3s ease;
+}
+
+.bg-white:hover{
+  transform:translateY(-3px);
+  box-shadow:0 15px 30px rgba(0,0,0,0.08);
+}
+
+/* Icon tròn */
+.bg-yellow-500{
+  background:#92400e !important;
+  box-shadow:0 4px 12px rgba(146,64,14,0.35);
+}
+
+/* Contact box */
+.bg-gray-50{
+  transition:all .25s ease;
+}
+
+.bg-gray-50:hover{
+  background:#fef3c7;
+  transform:translateX(4px);
+}
+
+/* Input */
+input,
+textarea{
+  font-size:14px;
+  transition:all .25s ease;
+  border:1px solid #e5e7eb;
+}
+
+/* Focus input */
+input:focus,
+textarea:focus{
+  border-color:#92400e !important;
+  box-shadow:0 0 0 3px rgba(146,64,14,0.2);
+}
+
+/* Placeholder */
+input::placeholder,
+textarea::placeholder{
+  color:#9ca3af;
+}
+
+/* Button */
+button{
+  background:#92400e !important;
+  transition:all .3s ease;
+  letter-spacing:.4px;
+}
+
+button:hover{
+  background:#78350f !important;
+  transform:translateY(-1px);
+  box-shadow:0 10px 20px rgba(0,0,0,0.15);
+}
+
+/* Tiêu đề */
+h2,h3{
+  font-family:"Playfair Display",serif;
+}
+
+/* Responsive */
+@media(max-width:768px){
+
+  h2{
+    font-size:22px;
+  }
+
+  h3{
+    font-size:20px;
+  }
+
+}

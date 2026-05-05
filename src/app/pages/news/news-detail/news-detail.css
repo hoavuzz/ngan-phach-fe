@@ -1,0 +1,92 @@
+/* CONTAINER */
+.news-detail {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  line-height: 1.7;
+  font-family: Arial, sans-serif;
+}
+
+/* TIÊU ĐỀ */
+.news-detail h1 {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #222;
+}
+
+/* NGÀY ĐĂNG */
+.news-meta {
+  color: #777;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+/* ẢNH */
+.news-detail img {
+  width: 100%;
+  border-radius: 10px;
+  margin: 20px 0;
+}
+
+/* NỘI DUNG */
+.news-content {
+  font-size: 18px;
+  color: #333;
+}
+
+/* ĐOẠN VĂN */
+.news-content p {
+  margin-bottom: 16px;
+}
+
+/* LINK */
+.news-content a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.news-content a:hover {
+  text-decoration: underline;
+}
+
+/* HEADING TRONG NỘI DUNG */
+.news-content h2 {
+  margin-top: 25px;
+  font-size: 24px;
+}
+
+.news-content h3 {
+  margin-top: 20px;
+  font-size: 20px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .news-detail {
+    margin: 24px auto;
+    padding: 15px;
+  }
+
+  .news-detail h1 {
+    font-size: 24px;
+  }
+
+  .news-content {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .news-detail {
+    padding: 12px;
+  }
+
+  .news-detail h1 {
+    font-size: 22px;
+  }
+
+  .news-content {
+    font-size: 15px;
+  }
+}

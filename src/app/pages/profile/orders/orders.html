@@ -1,0 +1,527 @@
+<div class="min-h-screen bg-gray-50">
+  <!-- SEO Meta Tags -->
+  <div class="hidden" aria-hidden="true">
+    <h1>Quản Lý Đơn Hàng Của Tôi | Shop Đàn Tranh</h1>
+    <p>Theo dõi trạng thái đơn hàng, lịch sử mua sắm và quản lý giao dịch của bạn tại cửa hàng đàn tranh uy tín</p>
+  </div>
+
+  <!-- Container -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+    <!-- Header Section -->
+    <div class="mb-8 pb-6 border-b-2 border-gray-300">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 sm:text-4xl">Đơn Hàng Của Tôi</h1>
+          <p class="mt-2 text-gray-600">Quản lý và theo dõi tất cả các đơn hàng của bạn</p>
+        </div>
+        <div class="flex gap-3">
+          <a href="/" class="inline-flex items-center px-4 py-2 text-sm font-medium text-[#9A3F0F] bg-amber-50 rounded-lg hover:bg-amber-100 transition-colors border border-[#9A3F0F]">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.5 6M17 13l1.5 6M9 21h6M12 18v3"/>
+            </svg>
+            Tiếp tục mua sắm
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="space-y-4">
+      <!-- Skeleton Loader -->
+      <div class="bg-white rounded-xl shadow-sm overflow-hidden border-2 border-gray-200">
+        <div class="p-6 space-y-4">
+          <div class="h-8 bg-gray-200 rounded-lg animate-pulse w-1/4"></div>
+          <div class="h-24 bg-gray-100 rounded-lg animate-pulse"></div>
+          <div class="h-12 bg-gray-100 rounded-lg animate-pulse w-3/4"></div>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl shadow-sm overflow-hidden border-2 border-gray-200">
+        <div class="p-6 space-y-4">
+          <div class="h-8 bg-gray-200 rounded-lg animate-pulse w-1/3"></div>
+          <div class="h-24 bg-gray-100 rounded-lg animate-pulse"></div>
+          <div class="h-12 bg-gray-100 rounded-lg animate-pulse w-2/3"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error && !isLoading" class="mb-6">
+      <div class="bg-red-50 border-l-4 border-red-500 border-2 border-red-200 rounded-lg p-4">
+        <div class="flex items-start">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+            </svg>
+          </div>
+          <div class="ml-3">
+            <h3 class="text-sm font-medium text-red-800">Lỗi tải dữ liệu</h3>
+            <p class="text-sm text-red-700 mt-1">{{ error }}</p>
+            <button (click)="loadOrders()" class="mt-2 text-sm font-medium text-red-600 hover:text-red-500">
+              Thử lại →
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Filter Tabs -->
+    <div class="mb-8">
+      <div class="border-b-2 border-gray-300">
+        <nav class="-mb-px flex gap-6 overflow-x-auto pb-2" aria-label="Tabs">
+          <button
+            *ngFor="let filter of filters"
+            (click)="setFilter(filter.value)"
+            [class.border-[#9A3F0F]]="activeFilter === filter.value"
+            [class.text-[#9A3F0F]]="activeFilter === filter.value"
+            [class.border-transparent]="activeFilter !== filter.value"
+            [class.text-gray-500]="activeFilter !== filter.value"
+            class="group inline-flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors hover:text-gray-700 hover:border-gray-400">
+            <span>{{ filter.label }}</span>
+            <span *ngIf="getFilterCount(filter.value) > 0"
+                  [class.bg-[#9A3F0F]]="activeFilter === filter.value"
+                  [class.bg-gray-200]="activeFilter !== filter.value"
+                  [class.text-white]="activeFilter === filter.value"
+                  [class.text-gray-700]="activeFilter !== filter.value"
+                  class="ml-2 px-2 py-0.5 rounded-full text-xs font-medium">
+              {{ getFilterCount(filter.value) }}
+            </span>
+          </button>
+        </nav>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && orders.length === 0" class="text-center py-16">
+      <div class="max-w-md mx-auto">
+        <div class="bg-gray-100 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6 border-2 border-gray-300">
+          <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+          </svg>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">Chưa có đơn hàng nào</h3>
+        <p class="text-gray-500 mb-6">
+          {{ activeFilter === 'all' ? 'Bạn chưa có đơn hàng nào' : 'Không có đơn hàng nào trong danh mục này' }}
+        </p>
+        <a href="/" class="inline-flex items-center px-6 py-3 bg-[#9A3F0F] text-white rounded-lg hover:bg-[#7C2D12] transition-colors border-2 border-[#7C2D12]">
+          Bắt đầu mua sắm
+        </a>
+      </div>
+    </div>
+
+    <!-- Orders List -->
+    <div class="space-y-6" *ngIf="!isLoading && orders.length > 0">
+      <div *ngFor="let order of orders" class="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow border-2 border-gray-200">
+
+        <!-- Order Header -->
+        <div class="p-6 border-b-2 border-gray-200">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+              <div>
+                <span class="text-sm text-gray-500">Mã đơn hàng</span>
+                <p class="font-semibold text-gray-900">#{{ order.maDonHang }}</p>
+              </div>
+              <div class="hidden sm:block w-px h-8 bg-gray-300"></div>
+              <div>
+                <span class="text-sm text-gray-500">Ngày đặt</span>
+                <p class="text-gray-700">{{ formatDate(order.ngayDatHang) }}</p>
+              </div>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+              <!-- Status Badge -->
+              <div [class]="getStatusBadgeClass(order.trangThai)" class="px-3 py-1 rounded-full text-xs font-medium border">
+                {{ getStatusText(order.trangThai) }}
+              </div>
+              <!-- Payment Status -->
+              <div [class]="order.trangThaiThanhToan === 'da_thanh_toan' ? 'bg-green-100 text-green-700 border-green-300' : 'bg-yellow-100 text-yellow-700 border-yellow-300'"
+                   class="px-3 py-1 rounded-full text-xs font-medium border">
+                {{ order.trangThaiThanhToan === 'da_thanh_toan' ? 'Đã thanh toán' : 'Chưa thanh toán' }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Items Preview -->
+        <div class="p-6 border-b-2 border-gray-200">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-medium text-gray-900">Sản phẩm</h3>
+            <span class="text-sm text-gray-500">{{ getOrderItemCount(order) }} sản phẩm</span>
+          </div>
+          <div class="space-y-3">
+            <div *ngFor="let item of getOrderItemsPreview(order)" class="flex items-center gap-4">
+              <img [src]="getOrderItemImage(item)"
+                   [alt]="item.bienThe?.sanPham?.tenSanPham"
+                   class="w-16 h-16 rounded-lg object-cover bg-gray-100 border-2 border-gray-200"
+                   loading="lazy">
+              <div class="flex-1 min-w-0">
+                <p class="font-medium text-gray-900 truncate">{{ item.bienThe?.sanPham?.tenSanPham || 'Sản phẩm' }}</p>
+                <p class="text-sm text-gray-500">Số lượng: {{ item.soLuong }}</p>
+              </div>
+              <div class="text-right">
+                <p class="font-semibold text-[#9A3F0F]">{{ formatCurrency(item.thanhTien) }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order Footer -->
+        <div class="px-6 py-4 bg-gray-50 rounded-b-xl border-t-2 border-gray-200">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div class="flex flex-wrap items-center gap-4 sm:gap-6">
+              <div>
+                <span class="text-sm text-gray-500">Tổng tiền</span>
+                <p class="text-xl font-bold text-[#9A3F0F]">{{ formatCurrency(order.tongTien) }}</p>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-3">
+              <button
+                *ngIf="order.trangThai === 'cho_xac_nhan'"
+                (click)="openCancelModal(order)"
+                class="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors border border-red-300">
+                Hủy đơn
+              </button>
+              <button
+                (click)="openDetailModal(order)"
+                class="px-4 py-2 text-sm font-medium text-[#9A3F0F] bg-amber-50 rounded-lg hover:bg-amber-100 transition-colors border border-[#9A3F0F]">
+                Xem chi tiết
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="!isLoading && totalPages > 1" class="mt-8 flex justify-center">
+      <nav class="flex items-center gap-2" aria-label="Pagination">
+        <button (click)="goToPage(currentPage - 1)"
+                [disabled]="currentPage === 1"
+                class="p-2 text-gray-400 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed border border-gray-300">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+
+        <div class="flex flex-wrap gap-1">
+          <button *ngFor="let page of getPageNumbers()"
+                  (click)="goToPage(page)"
+                  [class.bg-[#9A3F0F]]="currentPage === page"
+                  [class.text-white]="currentPage === page"
+                  [class.bg-white]="currentPage !== page"
+                  [class.text-gray-700]="currentPage !== page"
+                  [class.border-[#9A3F0F]]="currentPage === page"
+                  [class.border-gray-300]="currentPage !== page"
+                  class="w-10 h-10 rounded-lg font-medium hover:bg-gray-100 transition-colors border-2">
+            {{ page }}
+          </button>
+        </div>
+
+        <button (click)="goToPage(currentPage + 1)"
+                [disabled]="currentPage === totalPages"
+                class="p-2 text-gray-400 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed border border-gray-300">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Cancel Order Modal -->
+  <div *ngIf="showCancelModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+      <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" (click)="closeCancelModal()"></div>
+
+      <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border-2 border-gray-300">
+        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+          <div class="sm:flex sm:items-start">
+            <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10 border-2 border-red-300">
+              <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+              </svg>
+            </div>
+            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+              <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                Xác nhận hủy đơn hàng
+              </h3>
+              <div class="mt-2">
+                <p class="text-sm text-gray-500">
+                  Bạn có chắc chắn muốn hủy đơn hàng #{{ selectedOrder?.maDonHang }}? Hành động này không thể hoàn tác.
+                </p>
+                <div class="mt-4">
+                  <label class="block text-sm font-medium text-gray-700 mb-2">
+                    Lý do hủy <span class="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    [(ngModel)]="cancelReason"
+                    rows="3"
+                    class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#9A3F0F] focus:border-transparent"
+                    placeholder="Vui lòng cho biết lý do bạn muốn hủy đơn hàng...">
+                  </textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-3 border-t-2 border-gray-200">
+          <button
+            (click)="confirmCancel()"
+            [disabled]="isCancelling"
+            class="w-full inline-flex justify-center rounded-md border-2 border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
+            {{ isCancelling ? 'Đang xử lý...' : 'Xác nhận hủy' }}
+          </button>
+          <button
+            (click)="closeCancelModal()"
+            [disabled]="isCancelling"
+            class="mt-3 w-full inline-flex justify-center rounded-md border-2 border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#9A3F0F] sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+            Quay lại
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Order Detail Modal -->
+  <div *ngIf="showDetailModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="detail-modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+      <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" (click)="closeDetailModal()"></div>
+
+      <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full border-2 border-gray-300">
+        <div class="bg-white px-4 pt-5 pb-4 sm:p-6">
+          <div class="flex justify-between items-start mb-4 pb-3 border-b-2 border-gray-200">
+            <h3 class="text-xl font-semibold text-gray-900" id="detail-modal-title">
+              Chi tiết đơn hàng #{{ selectedOrderDetail?.maDonHang }}
+            </h3>
+            <button (click)="closeDetailModal()" class="text-gray-400 hover:text-gray-500">
+              <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+
+          <div *ngIf="isLoadingDetail" class="text-center py-12">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-[#9A3F0F]"></div>
+            <p class="mt-2 text-gray-500">Đang tải chi tiết đơn hàng...</p>
+          </div>
+
+          <div *ngIf="!isLoadingDetail && selectedOrderDetail" class="space-y-6 max-h-[70vh] overflow-y-auto pr-2">
+            <!-- Order Info Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="bg-gray-50 rounded-lg p-4 border-2 border-gray-200">
+                <h4 class="font-medium text-gray-900 mb-3">Thông tin đơn hàng</h4>
+                <div class="space-y-2 text-sm">
+                  <div class="flex justify-between pb-1 border-b border-gray-200">
+                    <span class="text-gray-500">Mã đơn hàng:</span>
+                    <span class="font-medium">#{{ selectedOrderDetail.maDonHang }}</span>
+                  </div>
+                  <div class="flex justify-between pb-1 border-b border-gray-200">
+                    <span class="text-gray-500">Ngày đặt:</span>
+                    <span>{{ formatDate(selectedOrderDetail.ngayDatHang) }}</span>
+                  </div>
+                  <div class="flex justify-between pb-1 border-b border-gray-200">
+                    <span class="text-gray-500">Trạng thái:</span>
+                    <span [class]="getStatusClass(selectedOrderDetail.trangThai)" class="font-medium">
+                      {{ getStatusText(selectedOrderDetail.trangThai) }}
+                    </span>
+                  </div>
+                  <div class="flex justify-between">
+                    <span class="text-gray-500">Thanh toán:</span>
+                    <span [class.text-green-600]="selectedOrderDetail.trangThaiThanhToan === 'da_thanh_toan'"
+                          [class.text-yellow-600]="selectedOrderDetail.trangThaiThanhToan === 'chua_thanh_toan'"
+                          class="font-medium">
+                      {{ selectedOrderDetail.trangThaiThanhToan === 'da_thanh_toan' ? 'Đã thanh toán' : 'Chưa thanh toán' }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div *ngIf="selectedOrderDetail.diaChi" class="bg-gray-50 rounded-lg p-4 border-2 border-gray-200">
+                <h4 class="font-medium text-gray-900 mb-3">Địa chỉ nhận hàng</h4>
+                <div class="space-y-1 text-sm">
+                  <p class="font-medium">{{ selectedOrderDetail.diaChi.hoTen }}</p>
+                  <p class="text-gray-600">{{ selectedOrderDetail.diaChi.soDienThoai }}</p>
+                  <p class="text-gray-600">{{ selectedOrderDetail.diaChi.diaChiChiTiet }}</p>
+                  <p class="text-gray-600">{{ selectedOrderDetail.diaChi.phuongXa }}, {{ selectedOrderDetail.diaChi.quanHuyen }}</p>
+                  <p class="text-gray-600">{{ selectedOrderDetail.diaChi.tinhThanh }}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Products List -->
+            <div class="bg-white border-2 border-gray-200 rounded-lg overflow-hidden">
+              <div class="bg-gray-50 px-4 py-3 border-b-2 border-gray-200">
+                <h4 class="font-medium text-gray-900">Sản phẩm đã mua</h4>
+              </div>
+              <div class="divide-y-2 divide-gray-200">
+                <div *ngFor="let item of selectedOrderDetail.chiTiet" class="p-4">
+                  <div class="flex gap-4">
+                    <img [src]="getOrderItemImage(item)"
+                         [alt]="item.bienThe?.sanPham?.tenSanPham"
+                         class="w-20 h-20 rounded-lg object-cover bg-gray-100 border-2 border-gray-200"
+                         loading="lazy">
+                    <div class="flex-1">
+                      <h5 class="font-medium text-gray-900">{{ item.bienThe?.sanPham?.tenSanPham || 'Sản phẩm' }}</h5>
+                      <p class="text-sm text-gray-500 mt-1">{{ item.bienThe?.tenBienThe || 'Phân loại mặc định' }}</p>
+                      <div class="flex items-center gap-4 mt-2 text-sm">
+                        <span class="text-gray-600">Số lượng: {{ item.soLuong }}</span>
+                        <span class="text-gray-600">Đơn giá: {{ formatCurrency(item.giaBanLucMua) }}</span>
+                      </div>
+                      <div class="mt-3">
+                        <button
+                          *ngIf="canReview(selectedOrderDetail, item)"
+                          (click)="openReviewModal(item)"
+                          class="px-3 py-1.5 text-sm font-medium text-amber-700 bg-amber-50 rounded-lg hover:bg-amber-100 transition-colors border border-amber-300">
+                          Viết đánh giá
+                        </button>
+                        <span
+                          *ngIf="selectedOrderDetail?.trangThai === 'da_giao' && hasReviewed(item)"
+                          class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-green-700 bg-green-50 rounded-lg border border-green-300">
+                          <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                          </svg>
+                          Đã đánh giá
+                        </span>
+                      </div>
+                    </div>
+                    <div class="text-right">
+                      <p class="text-lg font-bold text-[#9A3F0F]">{{ formatCurrency(item.thanhTien) }}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Payment Summary -->
+            <div class="bg-gray-50 rounded-lg p-4 border-2 border-gray-200">
+              <h4 class="font-medium text-gray-900 mb-3">Thông tin thanh toán</h4>
+              <div class="space-y-2">
+                <div class="flex justify-between text-sm pb-2 border-b border-gray-200">
+                  <span class="text-gray-600">Tạm tính</span>
+                  <span>{{ formatCurrency(getOrderSubtotal(selectedOrderDetail)) }}</span>
+                </div>
+                <div *ngIf="getOrderDiscount(selectedOrderDetail) > 0" class="flex justify-between text-sm pb-2 border-b border-gray-200">
+                  <span class="text-gray-600">Giảm giá</span>
+                  <span class="text-green-600">-{{ formatCurrency(getOrderDiscount(selectedOrderDetail)) }}</span>
+                </div>
+                <div class="flex justify-between text-sm pb-2 border-b border-gray-200">
+                  <span class="text-gray-600">Phí vận chuyển</span>
+                  <span>{{ formatCurrency(selectedOrderDetail.phiVanChuyen || 0) }}</span>
+                </div>
+                <div class="pt-2">
+                  <div class="flex justify-between">
+                    <span class="font-semibold text-gray-900">Tổng cộng</span>
+                    <span class="text-xl font-bold text-[#9A3F0F]">{{ formatCurrency(selectedOrderDetail.tongTien) }}</span>
+                  </div>
+                  <p class="text-xs text-gray-500 text-right mt-1">(Đã bao gồm VAT)</p>
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="selectedOrderDetail.ghiChu" class="bg-yellow-50 rounded-lg p-4 border-2 border-yellow-200">
+              <h4 class="font-medium text-gray-900 mb-2">Ghi chú</h4>
+              <p class="text-gray-700">{{ selectedOrderDetail.ghiChu }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t-2 border-gray-200">
+          <button
+            *ngIf="selectedOrderDetail?.trangThai === 'cho_xac_nhan'"
+            (click)="closeDetailModal(); openCancelModal(selectedOrderDetail!)"
+            class="w-full inline-flex justify-center rounded-md border-2 border-red-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-red-600 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm">
+            Hủy đơn hàng
+          </button>
+          <button
+            (click)="closeDetailModal()"
+            class="mt-3 w-full inline-flex justify-center rounded-md border-2 border-transparent shadow-sm px-4 py-2 bg-[#9A3F0F] text-base font-medium text-white hover:bg-[#7C2D12] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#9A3F0F] sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+            Đóng
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Review Modal -->
+  <div *ngIf="showReviewModal && selectedReviewItem" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="review-modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+      <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" (click)="closeReviewModal()"></div>
+
+      <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border-2 border-gray-300">
+        <form (ngSubmit)="submitReview()">
+          <div class="bg-white px-4 pt-5 pb-4 sm:p-6">
+            <div class="flex justify-between items-center mb-4 pb-3 border-b-2 border-gray-200">
+              <h3 class="text-lg font-medium text-gray-900" id="review-modal-title">
+                Đánh giá sản phẩm
+              </h3>
+              <button type="button" (click)="closeReviewModal()" class="text-gray-400 hover:text-gray-500">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+
+            <div class="flex gap-4 p-4 bg-gray-50 rounded-lg mb-4 border-2 border-gray-200">
+              <img [src]="getOrderItemImage(selectedReviewItem)"
+                   [alt]="selectedReviewItem.bienThe?.sanPham?.tenSanPham"
+                   class="w-16 h-16 rounded-lg object-cover bg-gray-100 border-2 border-gray-200">
+              <div class="flex-1">
+                <p class="font-medium text-gray-900">{{ selectedReviewItem.bienThe?.sanPham?.tenSanPham || 'Sản phẩm' }}</p>
+                <p class="text-sm text-gray-500">{{ selectedReviewItem.bienThe?.tenBienThe || 'Phân loại mặc định' }}</p>
+              </div>
+            </div>
+
+            <!-- Rating Stars -->
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Đánh giá của bạn <span class="text-red-500">*</span>
+              </label>
+              <div class="flex gap-1">
+                <button *ngFor="let star of [1,2,3,4,5]"
+                        type="button"
+                        (click)="reviewStars = star"
+                        class="focus:outline-none">
+                  <svg class="w-8 h-8 transition-colors"
+                       [class.text-yellow-400]="star <= reviewStars"
+                       [class.text-gray-300]="star > reviewStars"
+                       fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Review Comment -->
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Nhận xét của bạn
+              </label>
+              <textarea
+                [(ngModel)]="reviewComment"
+                name="reviewComment"
+                rows="4"
+                class="w-full px-3 py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#9A3F0F] focus:border-transparent"
+                placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này...">
+              </textarea>
+            </div>
+
+            <div *ngIf="reviewError" class="mb-4 p-3 bg-red-50 text-red-700 rounded-lg text-sm border-2 border-red-200">
+              {{ reviewError }}
+            </div>
+          </div>
+
+          <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t-2 border-gray-200">
+            <button type="submit"
+                    [disabled]="isSubmittingReview"
+                    class="w-full inline-flex justify-center rounded-md border-2 border-transparent shadow-sm px-4 py-2 bg-[#9A3F0F] text-base font-medium text-white hover:bg-[#7C2D12] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#9A3F0F] sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
+              {{ isSubmittingReview ? 'Đang gửi...' : 'Gửi đánh giá' }}
+            </button>
+            <button type="button"
+                    (click)="closeReviewModal()"
+                    class="mt-3 w-full inline-flex justify-center rounded-md border-2 border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#9A3F0F] sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+              Hủy
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

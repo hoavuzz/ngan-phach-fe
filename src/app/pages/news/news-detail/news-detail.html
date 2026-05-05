@@ -1,0 +1,16 @@
+<div class="news-detail" *ngIf="data">
+
+  <h1>{{ data.tieuDe }}</h1>
+
+  <div class="news-meta">
+    {{ data.ngayDang | date:'dd/MM/yyyy' }}
+  </div>
+
+  <img 
+    *ngIf="data.hinhAnh"
+    [src]="'http://localhost:3000/uploads/' + data.hinhAnh"
+    (error)="onImageError($event)">
+
+  <div class="news-content" [innerHTML]="data.noiDung"></div>
+
+</div>

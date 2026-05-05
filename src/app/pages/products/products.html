@@ -1,0 +1,198 @@
+﻿<div class="shop-container">
+
+  <!-- SIDEBAR - Hidden on mobile -->
+  <div class="sidebar">
+
+    <h3>Bộ Lọc</h3>
+
+    <div class="filter-group">
+      <h4>DANH MỤC</h4>
+
+      <div class="filter-options scrollable-options">
+        <div *ngFor="let cate of categories">
+          <label>
+            <input
+              type="checkbox"
+              [checked]="selectedCategories.includes(cate.id)"
+              (change)="onCategoryChange($event, cate.id)">
+            <span>{{ cate.tenDanhMuc }}</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <h4>KHOẢNG GIÁ</h4>
+
+      <label>
+        <input
+          type="radio"
+          name="price"
+          [checked]="selectedPriceRange === ''"
+          (change)="onPriceRangeChange('')">
+        <span>Tất cả</span>
+      </label>
+
+      <label *ngFor="let range of priceRanges">
+        <input
+          type="radio"
+          name="price"
+          [checked]="selectedPriceRange === range.key"
+          (change)="onPriceRangeChange(range.key)">
+        <span>{{ range.label }}</span>
+      </label>
+    </div>
+
+    <div class="filter-group">
+      <h4>THƯƠNG HIỆU</h4>
+
+      <div class="filter-options scrollable-options">
+        <div *ngFor="let brand of brands">
+          <label>
+            <input
+              type="checkbox"
+              [checked]="selectedBrands.includes(brand.id)"
+              (change)="onBrandChange($event, brand.id)">
+            <span>{{ brand.ten_thuong_hieu }}</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PRODUCTS -->
+  <div class="products">
+
+    <div class="top-bar">
+      <p>Hiển thị {{ filteredProducts.length }} sản phẩm</p>
+
+      <!-- Filter button for mobile -->
+      <button class="filter-btn-mobile" (click)="openFilterModal()">
+        <i class="fa-solid fa-filter"></i>
+        Bộ lọc
+      </button>
+    </div>
+
+    <div class="product-grid">
+
+      <div class="product-card" *ngFor="let p of pagedProducts">
+        <a class="product-image" [routerLink]="['/products', p.slug]">
+          <img
+            [src]="getProductImage(p)"
+            [alt]="p.tenSanPham"
+            loading="lazy"
+            (error)="onImageError($event)">
+        </a>
+        <div class="product-info">
+
+          <p class="category">
+            {{ p.danhmuc_nhaccu?.tenDanhMuc }}
+          </p>
+
+          <h3>
+            <a [routerLink]="['/products', p.slug]">
+              {{ p.tenSanPham }}
+            </a>
+          </h3>
+
+          <div class="price">
+            {{ p.giaThamKhao | number }} ₫
+          </div>
+
+          <button type="button" (click)="addToCart(p)">Thêm giỏ hàng</button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <p class="empty-state" *ngIf="filteredProducts.length === 0">
+      Không có sản phẩm phù hợp với bộ lọc hiện tại.
+    </p>
+
+    <div class="pagination" *ngIf="totalPages > 1">
+      <button (click)="goToPage(currentPage - 1)">←</button>
+
+      <button
+        *ngFor="let page of [].constructor(totalPages); let i = index"
+        (click)="goToPage(i + 1)"
+        [class.active]="currentPage === i + 1">
+        {{ i + 1 }}
+      </button>
+
+      <button (click)="goToPage(currentPage + 1)">→</button>
+    </div>
+
+  </div>
+
+  <!-- Filter Modal for Mobile -->
+  <div class="filter-modal-overlay" *ngIf="isFilterModalOpen" (click)="closeFilterModal()">
+    <div class="filter-modal" (click)="$event.stopPropagation()">
+      <div class="filter-modal-header">
+        <h3>Bộ Lọc</h3>
+        <button class="close-btn" (click)="closeFilterModal()">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="filter-modal-content">
+        <div class="filter-group">
+          <h4>DANH MỤC</h4>
+          <div class="filter-options scrollable-options">
+            <div *ngFor="let cate of categories">
+              <label>
+                <input
+                  type="checkbox"
+                  [checked]="selectedCategories.includes(cate.id)"
+                  (change)="onCategoryChange($event, cate.id)">
+                <span>{{ cate.tenDanhMuc }}</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <h4>KHOẢNG GIÁ</h4>
+          <label>
+            <input
+              type="radio"
+              name="price-modal"
+              [checked]="selectedPriceRange === ''"
+              (change)="onPriceRangeChange('')">
+            <span>Tất cả</span>
+          </label>
+          <label *ngFor="let range of priceRanges">
+            <input
+              type="radio"
+              name="price-modal"
+              [checked]="selectedPriceRange === range.key"
+              (change)="onPriceRangeChange(range.key)">
+            <span>{{ range.label }}</span>
+          </label>
+        </div>
+
+        <div class="filter-group">
+          <h4>THƯƠNG HIỆU</h4>
+          <div class="filter-options scrollable-options">
+            <div *ngFor="let brand of brands">
+              <label>
+                <input
+                  type="checkbox"
+                  [checked]="selectedBrands.includes(brand.id)"
+                  (change)="onBrandChange($event, brand.id)">
+                <span>{{ brand.ten_thuong_hieu }}</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-modal-footer">
+        <button class="apply-btn" (click)="applyFiltersAndClose()">Áp dụng</button>
+      </div>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,70 @@
+<section class="bg-gradient-to-b from-white to-neutral-50 py-8 md:py-12">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div class="mb-6 text-center md:mb-10">
+      <h2 class="mb-2 text-xl font-bold text-neutral-800 md:mb-3 md:text-3xl">Danh mục nhạc cụ</h2>
+      <div class="mx-auto mb-3 h-1 w-16 bg-red-600 md:mb-4 md:w-24"></div>
+      <p class="mx-auto max-w-2xl text-sm text-neutral-600 md:text-base">
+        Những nhạc cụ truyền thống đặc sắc của Việt Nam
+      </p>
+    </div>
+
+    <div *ngIf="isLoading" class="py-10 text-center">
+      <div class="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-red-800"></div>
+      <p class="mt-4 text-neutral-600">Đang tải danh mục...</p>
+    </div>
+
+    <div *ngIf="error" class="py-10 text-center text-red-600">
+      {{ error }}
+    </div>
+
+    <div *ngIf="!isLoading && !error" class="relative">
+      <button
+        *ngIf="categories.length > 1"
+        (click)="prevCategories()"
+        class="absolute left-3 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/45 text-white shadow-lg backdrop-blur-sm transition hover:bg-black/65 md:left-4 md:flex md:h-12 md:w-12"
+      >
+        <svg class="h-4 w-4 md:h-6 md:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        </svg>
+      </button>
+
+      <button
+        *ngIf="categories.length > 1"
+        (click)="nextCategories()"
+        class="absolute right-3 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-black/45 text-white shadow-lg backdrop-blur-sm transition hover:bg-black/65 md:right-4 md:flex md:h-12 md:w-12"
+      >
+        <svg class="h-4 w-4 md:h-6 md:w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        </svg>
+      </button>
+
+      <div #categoryTrack class="category-track flex gap-3 overflow-x-auto px-1 pb-2 scroll-smooth md:gap-4">
+        <div
+          *ngFor="let cat of categories"
+          (click)="goToCategory(cat.slug)"
+          class="group min-w-[210px] flex-shrink-0 cursor-pointer sm:min-w-[230px] lg:min-w-[280px]"
+        >
+          <div class="category-card relative overflow-hidden rounded-2xl shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+            <img
+              class="category-image h-full w-full object-cover"
+              [src]="getCategoryImageUrl(cat.hinhanh)"
+              [alt]="cat.tenDanhMuc"
+              (error)="onCategoryImageError($event)"
+            />
+
+            <div class="category-overlay"></div>
+
+            <div class="category-content">
+              <h3 class="category-title">
+                {{ cat.tenDanhMuc }}
+              </h3>
+              <p class="category-desc" [title]="cat.moTa">
+                {{ cat.moTa || 'Nhạc cụ truyền thống Việt Nam' }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

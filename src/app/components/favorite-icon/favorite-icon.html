@@ -1,0 +1,21 @@
+<button
+  (click)="toggleFavorite($event)"
+  class="favorite-btn relative flex items-center justify-center transition-all duration-300 hover:scale-110 focus:outline-none"
+  [class]="isLoading ? 'cursor-wait' : 'cursor-pointer'"
+  [disabled]="isLoading"
+  type="button"
+>
+  <i
+    *ngIf="!isLoading"
+    class="text-2xl transition-all duration-300"
+    [class]="isFavorite ? 'fa-solid fa-heart text-red-500' : 'fa-regular fa-heart text-gray-400 hover:text-red-400'"
+    [style.fontSize.px]="size"
+  ></i>
+
+  <!-- Loading spinner -->
+  <i
+    *ngIf="isLoading"
+    class="fa-solid fa-circle-notch fa-spin text-gray-400"
+    [style.fontSize.px]="size"
+  ></i>
+</button>

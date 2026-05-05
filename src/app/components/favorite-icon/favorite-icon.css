@@ -1,0 +1,37 @@
+.favorite-btn {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  padding: 0;
+  margin: 0;
+  width: auto;
+  height: auto;
+  min-width: unset;
+  min-height: unset;
+  line-height: 1;
+}
+
+.favorite-btn:focus,
+.favorite-btn:active,
+.favorite-btn:hover {
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.favorite-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Đảm bảo không có nền trắng */
+:host {
+  display: inline-block;
+  line-height: 0;
+}
+
+::ng-deep .favorite-btn i {
+  transition: all 0.3s ease;
+}

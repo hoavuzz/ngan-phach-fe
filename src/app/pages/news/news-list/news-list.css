@@ -1,0 +1,226 @@
+/* ====== CONTAINER ====== */
+.main-content .container {
+  --primary: #8b2635;
+  --primary-dark: #6b1d29;
+  --secondary: #c9a227;
+  --secondary-light: #e8c547;
+  --dark: #1a1a1a;
+  --text: #333333;
+  --text-light: #666666;
+  --light: #fdf8f0;
+  --white: #ffffff;
+  --border: #e5e5e5;
+  --success: #28a745;
+  --error: #dc3545;
+
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 0 15px;
+  font-family: 'Open Sans', sans-serif;
+}
+
+/* ====== CATEGORY ====== */
+.main-content .category-bar {
+  display: flex;
+  gap: 25px;
+  padding: 12px 0;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+.main-content .category-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.main-content .category-item {
+  text-decoration: none;
+  color: var(--text-light);
+  font-size: 14px;
+  font-weight: 500;
+  padding-bottom: 6px;
+  position: relative;
+  transition: 0.3s;
+  white-space: nowrap;
+}
+
+.main-content .category-item:hover {
+  color: var(--primary);
+}
+
+.main-content .category-item.active {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.main-content .category-item::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 0;
+  height: 2px;
+  background: var(--secondary);
+  transition: 0.3s;
+}
+
+.main-content .category-item:hover::after,
+.main-content .category-item.active::after {
+  width: 100%;
+}
+
+/* ====== LAYOUT ====== */
+.main-content .content {
+  display: flex;
+  gap: 25px;
+}
+
+.main-content .left {
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+/* ====== CARD NEWS ====== */
+.main-content .news-item {
+  display: flex;
+  gap: 15px;
+  padding: 14px;
+  border-bottom: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.main-content .news-item:hover {
+  background: var(--light);
+}
+
+.main-content .news-item img {
+  width: 180px;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.main-content .info {
+  flex: 1;
+}
+
+.main-content .news-item h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--dark);
+  margin-bottom: 6px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.main-content .news-item h3:hover {
+  color: var(--primary);
+}
+
+.main-content .category {
+  font-size: 12px;
+  color: var(--secondary);
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.main-content .date {
+  font-size: 12px;
+  color: var(--text-light);
+}
+
+/* ====== SIDEBAR ====== */
+.main-content .right {
+  width: 30%;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 15px;
+}
+
+.main-content .right h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: var(--primary);
+}
+
+.main-content .hot-item {
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--border);
+}
+
+.main-content .hot-item:last-child {
+  border-bottom: none;
+}
+
+.main-content .hot-item a {
+  text-decoration: none;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.main-content .hot-item a:hover {
+  color: var(--primary);
+}
+
+.main-content .news-item:first-child {
+  flex-direction: column;
+}
+
+.main-content .news-item:first-child img {
+  width: 100%;
+  height: 250px;
+}
+
+/* ====== RESPONSIVE ====== */
+@media (max-width: 900px) {
+  .main-content .content {
+    flex-direction: column;
+  }
+
+  .main-content .left,
+  .main-content .right {
+    width: 100%;
+  }
+
+  .main-content .news-item {
+    flex-direction: column;
+  }
+
+  .main-content .news-item img {
+    width: 100%;
+    height: 200px;
+  }
+}
+
+@media (max-width: 600px) {
+  .main-content .container {
+    margin: 12px auto;
+    padding: 0 12px;
+  }
+
+  .main-content .category-bar {
+    gap: 16px;
+  }
+
+  .main-content .news-item {
+    padding: 12px;
+  }
+
+  .main-content .news-item:first-child img,
+  .main-content .news-item img {
+    height: 180px;
+  }
+
+  .main-content .news-item h3 {
+    font-size: 15px;
+  }
+}

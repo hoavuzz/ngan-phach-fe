@@ -1,0 +1,207 @@
+<div class="flex-1 rounded-2xl border border-neutral-200 bg-white p-5 shadow-md sm:p-6 lg:p-8">
+
+  <!-- LOADING -->
+  <div *ngIf="isLoading" class="py-10 text-center text-neutral-500">
+    Đang tải thông tin...
+  </div>
+
+  <!-- ERROR -->
+  <div *ngIf="errorMessage" class="py-10 text-center text-red-600">
+    <p>{{ errorMessage }}</p>
+    <button
+      (click)="loadProfile()"
+      class="mt-4 rounded-lg bg-amber-600 px-4 py-2 text-white hover:bg-amber-700">
+      Thử lại
+    </button>
+  </div>
+
+  <!-- CONTENT -->
+  <div *ngIf="!isLoading && !errorMessage">
+
+    <!-- HEADER -->
+    <div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <h2 class="text-xl font-semibold text-neutral-800">
+        Thông tin tài khoản
+      </h2>
+
+      <button
+        (click)="toggleEdit()"
+        class="rounded-lg bg-amber-600 px-5 py-2 text-sm font-medium text-white transition hover:bg-amber-700">
+        {{ editing ? 'Hủy' : 'Chỉnh sửa' }}
+      </button>
+    </div>
+
+    <!-- MAIN -->
+    <div class="flex flex-col gap-8 lg:flex-row lg:gap-10">
+
+      <!-- AVATAR -->
+      <div class="flex flex-col items-center">
+        <img
+          [src]="avatarPreview"
+          class="h-32 w-32 rounded-full object-cover ring-4 ring-amber-100 shadow-sm">
+
+        <input
+          type="file"
+          hidden
+          #avatarInput
+          (change)="onAvatarChange($event)"
+          accept="image/*">
+
+        <button
+          (click)="avatarInput.click()"
+          class="mt-4 rounded-lg border border-neutral-300 px-4 py-2 text-sm text-neutral-700 transition hover:bg-neutral-100">
+          Đổi ảnh
+        </button>
+      </div>
+
+      <!-- FORM -->
+      <div class="grid flex-1 grid-cols-1 gap-6 md:grid-cols-2">
+
+        <div>
+          <label class="text-xs text-neutral-500">Email</label>
+          <input
+            class="mt-1 w-full rounded-lg border border-neutral-200 bg-neutral-100 px-3 py-2 text-sm"
+            [(ngModel)]="email"
+            disabled>
+        </div>
+
+        <div>
+          <label class="text-xs text-neutral-500">Họ và tên</label>
+          <input
+            class="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none"
+            [(ngModel)]="hoTen"
+            [disabled]="!editing">
+        </div>
+
+        <div>
+          <label class="text-xs text-neutral-500">Số điện thoại</label>
+          <input
+            class="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm focus:border-amber-500 focus:outline-none"
+            [(ngModel)]="soDienThoai"
+            [disabled]="!editing">
+        </div>
+
+        <div>
+          <label class="text-xs text-neutral-500">Điểm tích lũy</label>
+          <input
+            class="mt-1 w-full rounded-lg border border-neutral-200 bg-neutral-100 px-3 py-2 text-sm"
+            [(ngModel)]="diem"
+            disabled>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SAVE -->
+    <div *ngIf="editing" class="mt-8">
+      <button
+        (click)="saveProfile()"
+        [disabled]="!hasChanges()"
+        class="rounded-lg bg-amber-600 px-6 py-2 text-sm font-medium text-white transition hover:bg-amber-700 disabled:cursor-not-allowed disabled:opacity-50">
+        Lưu thay đổi
+      </button>
+    </div>
+
+    <!-- ADDRESS -->
+    <div class="mt-10">
+
+      <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <h3 class="text-base font-semibold text-neutral-800">
+          Sổ địa chỉ
+        </h3>
+
+        <button
+          (click)="addAddress()"
+          class="rounded-lg bg-amber-600 px-4 py-2 text-sm text-white hover:bg-amber-700">
+          + Thêm địa chỉ
+        </button>
+      </div>
+
+      <!-- LOADING -->
+      <div *ngIf="isLoadingAddresses" class="py-4 text-center text-neutral-500">
+        Đang tải địa chỉ...
+      </div>
+
+      <!-- EMPTY -->
+      <div *ngIf="!isLoadingAddresses && addresses.length === 0" class="py-4 text-center text-neutral-400">
+        Bạn chưa có địa chỉ nào.
+      </div>
+
+      <!-- LIST -->
+      <div class="space-y-3">
+
+        <div
+          *ngFor="let address of addresses"
+          class="rounded-xl border border-neutral-200 transition hover:shadow-sm"
+          [class.bg-amber-50]="address.macDinh">
+
+          <!-- CLICK AREA -->
+          <div
+            class="cursor-pointer p-4"
+            (click)="!address.macDinh && setDefaultAddress(address.id)">
+
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+
+              <div class="flex-1">
+                <p class="font-medium text-neutral-800">
+                  {{ address.hoTenNguoiNhan }}
+                </p>
+
+                <p class="text-sm text-neutral-500">
+                  {{ address.soDienThoai }}
+                </p>
+
+                <p class="text-sm text-neutral-600">
+                  {{ address.diaChiChiTiet }}
+                </p>
+
+                <p class="mt-1 text-xs text-neutral-400">
+                  {{ address.phuongXa }}, {{ address.quanHuyen }}, {{ address.thanhPho }}
+                </p>
+              </div>
+
+              <!-- DEFAULT BADGE -->
+              <span
+                *ngIf="address.macDinh"
+                class="rounded-full bg-amber-600 px-2 py-1 text-xs text-white">
+                Mặc định
+              </span>
+
+            </div>
+          </div>
+
+          <!-- ACTION -->
+          <div class="flex flex-wrap justify-end gap-3 px-4 pb-4 text-sm">
+
+            <button
+              (click)="editAddress(address.id)"
+              class="text-amber-600 transition hover:underline">
+              Sửa
+            </button>
+
+            <button
+              *ngIf="!address.macDinh"
+              (click)="deleteAddress(address.id)"
+              class="text-red-600 transition hover:underline">
+              Xóa
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MODAL -->
+  <app-address-modal
+    *ngIf="showAddressModal"
+    [addressId]="editingAddressId"
+    [addressData]="editingAddressData"
+    (close)="handleAddressModalClose()"
+    (save)="handleAddressModalSave($event)">
+  </app-address-modal>
+
+</div>

@@ -1,0 +1,77 @@
+<div class="group relative flex h-full min-h-[0] flex-col overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:border-amber-300 hover:shadow-xl">
+  <div
+    *ngIf="badge"
+    class="absolute left-2 top-2 z-10 rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-semibold text-white shadow"
+  >
+    {{ badge }}
+  </div>
+
+  <div class="absolute right-2 top-2 z-20 rounded-full bg-white/90 p-1 shadow backdrop-blur">
+    <app-favorite-icon [sanPhamId]="product?.id" [bienTheId]="null" [size]="16"> </app-favorite-icon>
+  </div>
+
+  <div
+    class="relative h-44 w-full cursor-pointer overflow-hidden bg-gray-100 sm:h-52 lg:h-56"
+    [routerLink]="['/products', product?.slug]"
+  >
+    <img
+      *ngIf="product?.image"
+      [src]="getImageUrl(product?.image)"
+      [alt]="product?.name"
+      class="h-full w-full object-cover transition duration-1000 group-hover:scale-110"
+      (error)="onImageError($event)"
+    />
+
+    <div class="absolute inset-0 transition group-hover:bg-black/5"></div>
+
+    <div *ngIf="!product?.image" class="flex h-full items-center justify-center text-gray-400">
+      <svg class="h-8 w-8 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01"
+        ></path>
+      </svg>
+    </div>
+  </div>
+
+  <div class="flex flex-1 flex-col p-3 sm:p-3.5">
+    <h3
+      class="mb-1 line-clamp-2 cursor-pointer text-[0.95rem] font-semibold leading-5 text-neutral-800 transition hover:text-amber-600"
+      [routerLink]="['/products', product?.slug]"
+    >
+      {{ product?.name }}
+    </h3>
+
+    <p class="mb-1 text-[11px] text-gray-400">
+      {{ product?.sanpham_bienthes[0]?.tenBienThe || 'Mặc định' }}
+    </p>
+
+    <div class="mb-2 flex items-center gap-2">
+      <span class="text-[1rem] font-bold text-amber-700 sm:text-[1.05rem]">
+        {{ formatPrice(product?.sanpham_bienthes[0]?.giaBan || product?.price) }} ₫
+      </span>
+    </div>
+
+    <p class="mb-3 line-clamp-2 text-[12px] leading-5 text-neutral-500">
+      {{ product?.desc }}
+    </p>
+
+    <div class="mt-auto space-y-2">
+      <button
+        (click)="addToCart()"
+        class="w-full rounded-lg border border-amber-600 py-2 text-xs font-medium text-amber-600 transition hover:bg-amber-600 hover:text-white"
+      >
+        Thêm vào giỏ
+      </button>
+
+      <button
+        (click)="buyNow(product)"
+        class="w-full rounded-lg bg-amber-700 py-2 text-xs font-medium text-white transition hover:bg-amber-800"
+      >
+        Mua ngay
+      </button>
+    </div>
+  </div>
+</div>

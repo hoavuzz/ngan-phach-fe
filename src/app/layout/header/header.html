@@ -1,0 +1,441 @@
+<header class="relative z-50 border-b border-amber-200 bg-white">
+  <!-- Topbar -->
+  <div class="bg-amber-800 text-amber-50">
+    <div
+      class="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-2 text-xs sm:px-6 sm:text-sm"
+    >
+      <div class="flex items-center gap-4 sm:gap-6">
+        <span class="flex items-center gap-2">
+          <i class="fa-solid fa-phone"></i>
+          <span>Hotline: 0123 456 789</span>
+        </span>
+        <span class="hidden items-center gap-2 sm:flex">
+          <i class="fa-solid fa-envelope"></i>
+          <span>contact@nhaccutruyenthong.vn</span>
+        </span>
+      </div>
+
+      <div class="hidden items-center gap-4 lg:flex">
+        <ng-container *ngIf="!user">
+          <a routerLink="/login" class="flex items-center gap-1 transition hover:text-amber-200">
+            <i class="fa-regular fa-user"></i>
+            <span>Đăng nhập</span>
+          </a>
+          <a routerLink="/register" class="transition hover:text-amber-200">Đăng ký</a>
+        </ng-container>
+
+        <ng-container *ngIf="user">
+          <a
+            routerLink="/trang-ca-nhan"
+            class="flex items-center gap-2 transition hover:text-amber-200"
+          >
+            <i class="fa-solid fa-user"></i>
+            <span>Xin chào, {{ user.hoTen }}</span>
+          </a>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <!-- Desktop Header -->
+  <div class="hidden lg:block">
+    <div
+      class="mx-auto grid max-w-7xl grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-8 px-6 py-4"
+    >
+      <a routerLink="/" class="block">
+        <img
+          src="images/logo.png"
+          alt="Nhạc cụ truyền thống Việt Nam"
+          class="h-20 w-auto object-contain"
+        />
+      </a>
+
+      <div class="relative search-container">
+        <form
+          (ngSubmit)="onSearch($event)"
+          role="search"
+          class="relative flex overflow-hidden rounded-xl border border-amber-300 shadow-sm"
+        >
+          <input
+            type="search"
+            [(ngModel)]="searchKeyword"
+            name="searchKeyword"
+            placeholder="Tìm kiếm sản phẩm, nhạc cụ, phụ kiện..."
+            (input)="onSearchInput()"
+            (focus)="onFocus()"
+            autocomplete="off"
+            class="w-full min-w-0 flex-1 px-4 py-3 pl-11 outline-none focus:ring-2 focus:ring-amber-600"
+            aria-label="Tìm kiếm sản phẩm"
+          />
+          <i
+            class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-amber-600"
+          ></i>
+
+          <div *ngIf="isLoadingSuggestions" class="absolute right-24 top-1/2 -translate-y-1/2">
+            <i class="fa-solid fa-circle-notch fa-spin text-amber-600"></i>
+          </div>
+
+          <button
+            type="submit"
+            class="bg-amber-800 px-7 font-medium text-white transition hover:bg-amber-900"
+            aria-label="Tìm kiếm"
+          >
+            Tìm kiếm
+          </button>
+        </form>
+
+        <div
+          *ngIf="showSuggestions && suggestions.length > 0"
+          class="absolute left-0 right-0 top-full z-[100] mt-2 max-h-96 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-xl"
+        >
+          <ul>
+            <li
+              *ngFor="let suggestion of suggestions"
+              (click)="selectSuggestion(suggestion)"
+              class="flex cursor-pointer items-center gap-3 border-b border-gray-100 px-4 py-3 transition hover:bg-amber-50 last:border-0"
+            >
+              <i class="fa-solid fa-search text-gray-400"></i>
+              <div class="min-w-0 flex-1">
+                <div class="truncate font-medium text-gray-800">{{ suggestion.tenSanPham }}</div>
+                <div class="mt-0.5 text-xs text-gray-500">Sản phẩm</div>
+              </div>
+              <i class="fa-solid fa-arrow-right text-sm text-gray-400"></i>
+            </li>
+          </ul>
+        </div>
+
+        <div
+          *ngIf="showSuggestions && !isLoadingSuggestions && suggestions.length === 0 && searchKeyword.trim().length > 0"
+          class="absolute left-0 right-0 top-full z-[100] mt-2 rounded-xl border border-gray-200 bg-white shadow-xl"
+        >
+          <div class="px-4 py-3 text-center text-gray-500">
+            <i class="fa-solid fa-search mr-2 text-gray-300"></i>
+            Không tìm thấy sản phẩm nào cho "{{ searchKeyword }}"
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-7 text-sm text-amber-900">
+        <a
+          routerLink="/yeu-thich"
+          class="header-action-link flex items-center gap-2 transition hover:text-amber-700"
+          aria-label="Sản phẩm yêu thích"
+        >
+          <i class="fa-regular fa-heart text-xl"></i>
+          <span>Yêu thích</span>
+        </a>
+
+        <a
+          routerLink="/gio-hang"
+          class="header-action-link relative flex items-center gap-2 transition hover:text-amber-700"
+          aria-label="Giỏ hàng"
+        >
+          <i class="fa-solid fa-cart-shopping text-xl"></i>
+          <span>Giỏ hàng</span>
+          <span
+            class="absolute -right-3 -top-2 min-w-[20px] rounded-full bg-amber-800 px-2 py-0.5 text-center text-xs text-white"
+          >
+            {{ cartCount > 99 ? '99+' : cartCount }}
+          </span>
+        </a>
+      </div>
+    </div>
+
+    <nav class="border-t border-amber-100 bg-white" aria-label="Điều hướng chính">
+      <div class="mx-auto max-w-7xl px-6">
+        <ul class="flex items-center gap-8 py-3 text-[15px] font-medium text-neutral-800">
+          <li><a routerLink="/" class="transition hover:text-amber-800">Trang chủ</a></li>
+
+          <li class="relative group">
+            <div class="flex cursor-pointer items-center gap-2 transition hover:text-amber-800">
+              <span>Danh mục</span>
+              <i class="fa-solid fa-chevron-down text-xs"></i>
+            </div>
+            <div
+              class="invisible absolute left-0 top-full z-[70] mt-2 w-64 rounded-xl border border-amber-100 bg-white opacity-0 shadow-xl transition-all duration-200 group-hover:visible group-hover:opacity-100"
+            >
+              <ul class="py-2 text-sm text-neutral-700">
+                <li
+                  *ngFor="let category of categories; trackBy: trackByCategory"
+                  class="px-4 py-2 transition hover:bg-amber-50 hover:text-amber-800"
+                >
+                  <a [routerLink]="['/products']" [queryParams]="{ category: category.slug }">
+                    {{ category.tenDanhMuc }}
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </li>
+
+          <li><a routerLink="/gioi-thieu" class="transition hover:text-amber-800">Giới thiệu</a></li>
+          <li><a routerLink="/lien-he" class="transition hover:text-amber-800">Liên hệ</a></li>
+          <li><a routerLink="/tin-tuc" class="transition hover:text-amber-800">Tin tức</a></li>
+        </ul>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Mobile Header -->
+  <div class="lg:hidden">
+    <div class="mx-auto max-w-7xl px-4 py-3 sm:px-6">
+      <div class="flex items-center justify-between gap-3">
+        <button
+          type="button"
+          (click)="isMenuOpen = true"
+          class="flex h-11 w-11 items-center justify-center rounded-full border border-amber-200 text-xl text-amber-800 transition hover:bg-amber-50"
+          aria-label="Mở menu điều hướng"
+        >
+          <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <a routerLink="/" class="min-w-0 flex-1">
+          <img
+            src="images/logo.png"
+            alt="Nhạc cụ truyền thống Việt Nam"
+            class="h-12 w-auto object-contain"
+          />
+        </a>
+
+        <div class="flex items-center gap-2">
+          <a
+            routerLink="/yeu-thich"
+            class="relative flex h-11 w-11 items-center justify-center rounded-full border border-amber-200 text-amber-800 transition hover:bg-amber-50"
+            aria-label="Yêu thích"
+          >
+            <i class="fa-regular fa-heart text-lg"></i>
+          </a>
+
+          <a
+            routerLink="/gio-hang"
+            class="relative flex h-11 w-11 items-center justify-center rounded-full border border-amber-200 text-amber-800 transition hover:bg-amber-50"
+            aria-label="Giỏ hàng"
+          >
+            <i class="fa-solid fa-cart-shopping text-lg"></i>
+            <span
+              class="absolute -right-1 -top-1 min-w-[18px] rounded-full bg-amber-800 px-1.5 py-0.5 text-center text-[10px] text-white"
+            >
+              {{ cartCount > 99 ? '99+' : cartCount }}
+            </span>
+          </a>
+        </div>
+      </div>
+
+      <div class="relative mt-3 search-container">
+        <form
+          (ngSubmit)="onSearch($event)"
+          role="search"
+          class="relative flex overflow-hidden rounded-xl border border-amber-300 bg-white shadow-sm"
+        >
+          <input
+            type="search"
+            [(ngModel)]="searchKeyword"
+            name="searchKeywordMobile"
+            placeholder="Tìm kiếm sản phẩm..."
+            (input)="onSearchInput()"
+            (focus)="onFocus()"
+            autocomplete="off"
+            class="w-full min-w-0 flex-1 px-4 py-3 pl-11 text-sm outline-none focus:ring-2 focus:ring-amber-600"
+            aria-label="Tìm kiếm sản phẩm"
+          />
+          <i
+            class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-amber-600"
+          ></i>
+
+          <div *ngIf="isLoadingSuggestions" class="absolute right-20 top-1/2 -translate-y-1/2">
+            <i class="fa-solid fa-circle-notch fa-spin text-amber-600"></i>
+          </div>
+
+          <button
+            type="submit"
+            class="bg-amber-800 px-4 text-sm font-medium text-white transition hover:bg-amber-900"
+            aria-label="Tìm kiếm"
+          >
+            Tìm
+          </button>
+        </form>
+
+        <div
+          *ngIf="showSuggestions && suggestions.length > 0"
+          class="absolute left-0 right-0 top-full z-[100] mt-2 max-h-80 overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-xl"
+        >
+          <ul>
+            <li
+              *ngFor="let suggestion of suggestions"
+              (click)="selectSuggestion(suggestion)"
+              class="flex cursor-pointer items-center gap-3 border-b border-gray-100 px-4 py-3 transition hover:bg-amber-50 last:border-0"
+            >
+              <i class="fa-solid fa-search text-gray-400"></i>
+              <div class="min-w-0 flex-1">
+                <div class="truncate font-medium text-gray-800">{{ suggestion.tenSanPham }}</div>
+                <div class="mt-0.5 text-xs text-gray-500">Sản phẩm</div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div
+          *ngIf="showSuggestions && !isLoadingSuggestions && suggestions.length === 0 && searchKeyword.trim().length > 0"
+          class="absolute left-0 right-0 top-full z-[100] mt-2 rounded-xl border border-gray-200 bg-white shadow-xl"
+        >
+          <div class="px-4 py-3 text-center text-sm text-gray-500">
+            Không tìm thấy sản phẩm nào cho "{{ searchKeyword }}"
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Drawer -->
+  <div
+    *ngIf="isMenuOpen"
+    (click)="isMenuOpen = false"
+    class="fixed inset-0 z-[90] bg-black/45"
+  ></div>
+
+  <aside
+    class="fixed left-0 top-0 z-[100] h-full w-[320px] max-w-[86vw] overflow-y-auto bg-white shadow-2xl transition-transform duration-300"
+    [ngClass]="isMenuOpen ? 'translate-x-0' : '-translate-x-full'"
+    aria-label="Menu di động"
+  >
+    <div class="flex items-center justify-between border-b border-amber-100 px-4 py-4">
+      <a routerLink="/" (click)="isMenuOpen = false" class="block">
+        <img
+          src="images/logo.png"
+          alt="Nhạc cụ truyền thống Việt Nam"
+          class="h-10 w-auto object-contain"
+        />
+      </a>
+
+      <button
+        type="button"
+        (click)="isMenuOpen = false"
+        class="flex h-10 w-10 items-center justify-center rounded-full border border-amber-200 text-lg text-amber-800"
+        aria-label="Đóng menu"
+      >
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="border-b border-amber-100 px-4 py-4">
+      <ng-container *ngIf="!user">
+        <div class="mb-3">
+          <p class="text-sm font-semibold text-neutral-900">Chào mừng bạn đến với cửa hàng</p>
+          <p class="mt-1 text-xs text-neutral-500">Đăng nhập để theo dõi đơn hàng và lưu sản phẩm yêu thích.</p>
+        </div>
+        <div class="flex gap-2">
+          <a
+            routerLink="/login"
+            (click)="isMenuOpen = false"
+            class="flex-1 rounded-lg bg-amber-800 px-4 py-2.5 text-center text-sm font-medium text-white"
+          >
+            Đăng nhập
+          </a>
+          <a
+            routerLink="/register"
+            (click)="isMenuOpen = false"
+            class="flex-1 rounded-lg border border-amber-300 px-4 py-2.5 text-center text-sm font-medium text-amber-800"
+          >
+            Đăng ký
+          </a>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="user">
+        <a
+          routerLink="/trang-ca-nhan"
+          (click)="isMenuOpen = false"
+          class="flex items-center gap-3 rounded-xl bg-amber-50 px-3 py-3"
+        >
+          <span
+            class="flex h-11 w-11 items-center justify-center rounded-full bg-amber-800 text-white"
+          >
+            <i class="fa-regular fa-user"></i>
+          </span>
+          <span class="min-w-0">
+            <span class="block text-xs text-neutral-500">Tài khoản</span>
+            <span class="block truncate font-medium text-neutral-900">{{ user.hoTen }}</span>
+          </span>
+        </a>
+      </ng-container>
+    </div>
+
+    <div class="px-4 py-4">
+      <div class="grid grid-cols-2 gap-3">
+        <a
+          routerLink="/yeu-thich"
+          (click)="isMenuOpen = false"
+          class="rounded-xl border border-neutral-200 px-4 py-3 text-sm font-medium text-neutral-800"
+        >
+          <i class="fa-regular fa-heart mr-2 text-amber-700"></i>
+          Yêu thích
+        </a>
+        <a
+          routerLink="/gio-hang"
+          (click)="isMenuOpen = false"
+          class="rounded-xl border border-neutral-200 px-4 py-3 text-sm font-medium text-neutral-800"
+        >
+          <i class="fa-solid fa-cart-shopping mr-2 text-amber-700"></i>
+          Giỏ hàng
+        </a>
+      </div>
+    </div>
+
+    <nav class="border-t border-amber-100 px-4 py-4" aria-label="Điều hướng di động">
+      <ul class="space-y-1">
+        <li>
+          <a
+            routerLink="/"
+            (click)="isMenuOpen = false"
+            class="block rounded-lg px-3 py-3 font-medium text-neutral-900 transition hover:bg-amber-50"
+          >
+            Trang chủ
+          </a>
+        </li>
+        <li>
+          <a
+            routerLink="/gioi-thieu"
+            (click)="isMenuOpen = false"
+            class="block rounded-lg px-3 py-3 font-medium text-neutral-900 transition hover:bg-amber-50"
+          >
+            Giới thiệu
+          </a>
+        </li>
+        <li>
+          <a
+            routerLink="/lien-he"
+            (click)="isMenuOpen = false"
+            class="block rounded-lg px-3 py-3 font-medium text-neutral-900 transition hover:bg-amber-50"
+          >
+            Liên hệ
+          </a>
+        </li>
+        <li>
+          <a
+            routerLink="/tin-tuc"
+            (click)="isMenuOpen = false"
+            class="block rounded-lg px-3 py-3 font-medium text-neutral-900 transition hover:bg-amber-50"
+          >
+            Tin tức
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="border-t border-amber-100 px-4 py-4">
+      <div class="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-neutral-500">
+        Danh mục
+      </div>
+      <div class="space-y-1">
+        <a
+          *ngFor="let category of categories; trackBy: trackByCategory"
+          [routerLink]="['/products']"
+          [queryParams]="{ category: category.slug }"
+          (click)="isMenuOpen = false"
+          class="block rounded-lg px-3 py-2.5 text-sm text-neutral-700 transition hover:bg-amber-50 hover:text-amber-800"
+        >
+          {{ category.tenDanhMuc }}
+        </a>
+      </div>
+    </div>
+  </aside>
+</header>

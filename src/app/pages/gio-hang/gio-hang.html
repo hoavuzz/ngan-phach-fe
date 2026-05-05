@@ -1,0 +1,417 @@
+<main class="min-h-screen bg-neutral-50 py-4 sm:py-6 lg:py-10">
+  <div class="mx-auto max-w-7xl px-4 sm:px-6">
+    <div class="mb-4 flex flex-wrap items-center gap-2 text-xs text-gray-500 sm:text-sm md:mb-6">
+      <a routerLink="/" class="transition hover:text-red-800">Trang chủ</a>
+      <span>/</span>
+      <span class="font-medium text-gray-800">Giỏ hàng</span>
+    </div>
+
+    <div *ngIf="isLoading" class="py-20 text-center">
+      <div class="inline-block h-12 w-12 animate-spin rounded-full border-b-4 border-t-4 border-red-800"></div>
+      <p class="mt-4 text-gray-600">Đang tải giỏ hàng...</p>
+    </div>
+
+    <div *ngIf="!isLoading && cartItems.length === 0" class="rounded-xl bg-white py-20 text-center shadow-sm">
+      <svg class="mx-auto mb-4 h-24 w-24 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="1.5"
+          d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-1.5 6M17 13l1.5 6M9 21h6M12 15v6"
+        ></path>
+      </svg>
+      <p class="mb-4 text-lg text-gray-500">Giỏ hàng của bạn đang trống</p>
+      <a routerLink="/" class="inline-block rounded-lg bg-red-800 px-6 py-3 text-white transition hover:bg-red-900">
+        Tiếp tục mua sắm
+      </a>
+    </div>
+
+    <div *ngIf="!isLoading && cartItems.length > 0" class="grid gap-4 lg:grid-cols-3 lg:gap-8">
+      <div class="space-y-3 lg:col-span-2 lg:space-y-4">
+        <div class="flex flex-col gap-3 rounded-2xl bg-white p-3 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-4">
+          <label class="flex cursor-pointer items-center gap-3">
+            <input
+              type="checkbox"
+              class="h-4 w-4 accent-red-800"
+              [checked]="isAllSelected()"
+              (change)="toggleSelectAll($event)"
+              [disabled]="hasLoadingItems || cartItems.length === 0"
+            />
+            <span class="font-medium text-gray-700"> Chọn tất cả ({{ totalItems }} sản phẩm) </span>
+          </label>
+          <button
+            (click)="removeSelected()"
+            [disabled]="!hasSelectedItems()"
+            class="text-sm text-red-800 transition hover:text-red-900 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Xóa đã chọn
+          </button>
+        </div>
+
+        <div
+          *ngFor="let item of cartItems; trackBy: trackById"
+          class="rounded-2xl bg-white p-3 shadow-sm transition hover:shadow-md sm:p-4 lg:p-5"
+        >
+          <div *ngIf="item.loading" class="flex flex-col gap-5 sm:flex-row">
+            <div class="h-24 w-full animate-pulse rounded-xl bg-neutral-100 sm:w-24"></div>
+            <div class="flex-1 space-y-3">
+              <div class="h-5 w-3/4 animate-pulse rounded bg-neutral-100"></div>
+              <div class="h-4 w-1/2 animate-pulse rounded bg-neutral-100"></div>
+              <div class="h-6 w-1/3 animate-pulse rounded bg-neutral-100"></div>
+            </div>
+          </div>
+
+          <div *ngIf="!item.loading" class="flex items-start gap-3">
+            <input
+              type="checkbox"
+              class="mt-1 h-4 w-4 flex-shrink-0 accent-red-800"
+              [(ngModel)]="item.selected"
+              (change)="toggleSelect(item)"
+            />
+
+            <div class="h-[88px] w-[88px] flex-shrink-0 overflow-hidden rounded-xl bg-neutral-100 sm:h-24 sm:w-24">
+              <img
+                [src]="item.hinh"
+                [alt]="item.ten"
+                class="h-full w-full object-cover"
+                loading="lazy"
+                (error)="onImageError($event)"
+              />
+            </div>
+
+            <div class="min-w-0 flex-1">
+              <div class="flex items-start gap-2">
+                <div class="min-w-0 flex-1">
+                  <h3 class="line-clamp-2 text-sm font-semibold leading-5 text-gray-800 sm:text-[15px]">
+                    {{ item.ten }}
+                  </h3>
+
+                  <div *ngIf="item.tenSanPham && item.tenBienThe" class="mt-1 text-[11px] text-gray-400">
+                    Loại: {{ item.tenBienThe }}
+                  </div>
+
+                  <p class="mt-1 text-[11px] text-gray-400" *ngIf="item.maBienThe">Mã: {{ item.maBienThe }}</p>
+
+                  <p class="mt-1 text-[11px] text-red-500" *ngIf="item.tonKho && getRemainingStock(item) <= 5">
+                    Còn {{ getRemainingStock(item) }} sản phẩm
+                  </p>
+                  <p class="mt-1 text-[11px] text-gray-400" *ngIf="item.tonKho && getRemainingStock(item) > 5">
+                    Tồn kho: {{ getRemainingStock(item) }}
+                  </p>
+                  <p class="mt-1 text-[11px] text-orange-500" *ngIf="!item.tonKho || getRemainingStock(item) === 0">
+                    Tạm hết hàng
+                  </p>
+                </div>
+
+                <button
+                  (click)="remove(item)"
+                  class="hidden h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-gray-300 transition hover:bg-red-50 hover:text-red-800 sm:flex"
+                  title="Xoa san pham"
+                >
+                  <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+              </div>
+
+              <div class="mt-2 flex items-center justify-between gap-2">
+                <div class="min-w-0">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="text-base font-bold text-red-800" *ngIf="item.gia > 0">
+                      {{ formatPrice(item.gia) }}
+                    </span>
+                    <span class="text-xs text-gray-400 line-through" *ngIf="item.giaGoc && item.giaGoc > item.gia">
+                      {{ formatPrice(item.giaGoc) }}
+                    </span>
+                    <span class="text-xs text-gray-400" *ngIf="item.gia === 0">Liên hệ để biết giá</span>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <p class="text-[11px] text-gray-400">Tạm tính</p>
+                  <p class="text-sm font-bold text-red-800" *ngIf="item.gia > 0">
+                    {{ formatPrice(item.gia * item.soluong) }}
+                  </p>
+                  <p class="text-[11px] text-gray-400" *ngIf="item.gia === 0">Chưa có giá</p>
+                </div>
+              </div>
+
+              <div class="mt-3 flex items-center justify-between gap-3" *ngIf="item.tonKho > 0">
+                <div class="flex overflow-hidden rounded-full border border-gray-200 bg-white">
+                  <button
+                    (click)="decrease(item)"
+                    class="flex h-8 w-8 items-center justify-center text-sm transition hover:bg-gray-100"
+                    [disabled]="updatingItems.has(item.id_bienthe) || item.soluong <= 1"
+                  >
+                    -
+                  </button>
+
+                  <input
+                    type="number"
+                    [(ngModel)]="item.soluong"
+                    (change)="onCartQuantityChange(item)"
+                    min="1"
+                    [max]="item.tonKho"
+                    class="w-10 border-x border-gray-200 bg-transparent py-1 text-center text-sm outline-none"
+                  />
+
+                  <button
+                    (click)="increase(item)"
+                    class="flex h-8 w-8 items-center justify-center text-sm transition hover:bg-gray-100"
+                    [disabled]="item.tonKho && item.soluong >= item.tonKho"
+                  >
+                    +
+                  </button>
+                </div>
+
+                <button (click)="remove(item)" class="text-[11px] font-medium text-red-600 transition hover:text-red-800 sm:hidden">
+                  Xóa
+                </button>
+              </div>
+
+              <div *ngIf="!item.tonKho || item.tonKho === 0" class="mt-3">
+                <button (click)="remove(item)" class="text-xs text-red-600 hover:text-red-800">Xóa sản phẩm này</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <a routerLink="/" class="mt-3 inline-flex items-center gap-2 text-sm text-red-800 transition hover:text-red-900 sm:mt-4">
+          Tiếp tục mua sắm
+        </a>
+      </div>
+
+      <div class="hidden lg:block">
+        <div class="sticky top-20 space-y-4 rounded-2xl bg-white p-6 shadow-sm">
+          <h2 class="border-b pb-3 text-base font-bold md:text-lg">Thông Tin Đơn Hàng</h2>
+
+          <div class="space-y-2 rounded-2xl border border-stone-200 bg-stone-50 p-3 md:space-y-3 md:p-4">
+            <div class="flex flex-col gap-2 sm:flex-row">
+              <input
+                type="text"
+                [(ngModel)]="voucherCode"
+                placeholder="Nhập mã voucher"
+                class="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-red-800 focus:outline-none"
+                (keydown.enter)="$event.preventDefault(); applyVoucher()"
+              />
+              <button
+                (click)="applyVoucher()"
+                [disabled]="!voucherCode.trim() || subtotal <= 0"
+                class="w-full rounded-lg bg-red-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-900 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:px-6"
+              >
+                Áp dụng
+              </button>
+            </div>
+
+            <button
+              type="button"
+              (click)="toggleVoucherList()"
+              class="flex w-full items-center justify-between gap-3 rounded-xl bg-white px-3 py-3 text-left transition hover:bg-red-50/40"
+              [disabled]="subtotal <= 0 || eligibleVouchers.length === 0"
+            >
+              <span class="min-w-0">
+                <span class="block text-[11px] uppercase tracking-[0.12em] text-gray-400">Voucher</span>
+                <span class="block truncate text-sm font-medium text-gray-800">
+                  {{
+                    appliedVoucher
+                      ? appliedVoucher.maCode + ' - ' + getVoucherSummary(appliedVoucher)
+                      : (subtotal <= 0
+                        ? 'Chọn sản phẩm để xem voucher'
+                        : (eligibleVouchers.length === 0 ? 'Chưa có voucher phù hợp' : 'Chọn voucher'))
+                  }}
+                </span>
+              </span>
+              <span class="flex items-center gap-2">
+                <span
+                  *ngIf="eligibleVouchers.length > 0 && !appliedVoucher"
+                  class="rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-medium text-red-700"
+                >
+                  {{ eligibleVouchers.length }}
+                </span>
+                <i class="fa-solid" [ngClass]="isVoucherListOpen ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+              </span>
+            </button>
+
+            <div *ngIf="isVoucherListOpen && subtotal > 0 && eligibleVouchers.length > 0" class="max-h-[16rem] space-y-2 overflow-y-auto pr-1">
+              <button
+                *ngFor="let voucher of eligibleVouchers"
+                type="button"
+                (click)="selectVoucher(voucher)"
+                class="w-full rounded-xl border p-3 text-left transition"
+                [class.border-red-800]="isVoucherSelected(voucher)"
+                [class.bg-red-50]="isVoucherSelected(voucher)"
+                [class.border-gray-200]="!isVoucherSelected(voucher)"
+              >
+                <div class="flex items-start justify-between gap-3">
+                  <div class="min-w-0">
+                    <p class="font-semibold text-gray-800">{{ voucher.maCode }}</p>
+                    <p class="mt-1 text-xs text-red-700">{{ getVoucherSummary(voucher) }}</p>
+                    <p class="mt-1 text-xs text-gray-500" *ngIf="voucher.moTa">{{ voucher.moTa }}</p>
+                    <p class="mt-1 text-xs text-gray-400">
+                      Đơn tối thiểu {{ formatPrice(voucher.donHangToiThieu) }}
+                      <span *ngIf="voucher.ngayHetHan"> | Hết hạn {{ formatVoucherExpiry(voucher.ngayHetHan) }}</span>
+                    </p>
+                  </div>
+                  <span class="whitespace-nowrap text-xs font-medium text-red-800">
+                    {{ isVoucherSelected(voucher) ? 'Đang dùng' : 'Chọn' }}
+                  </span>
+                </div>
+              </button>
+            </div>
+
+            <div *ngIf="appliedVoucher" class="flex items-center justify-between gap-3 rounded-xl border border-green-200 bg-green-50 px-3 py-2.5 text-sm">
+              <div class="min-w-0 truncate">
+                <span class="mr-2 font-semibold text-green-700">Voucher</span>
+                <span class="text-green-700">{{ appliedVoucher.maCode }}</span>
+              </div>
+              <button type="button" (click)="removeVoucher()" class="flex-shrink-0 text-xs font-medium text-green-700 hover:text-green-900">
+                Xóa
+              </button>
+            </div>
+
+            <p *ngIf="voucherMessage" class="text-xs text-green-600">{{ voucherMessage }}</p>
+            <p *ngIf="voucherError" class="text-xs text-red-600">{{ voucherError }}</p>
+          </div>
+
+          <div class="space-y-2 text-sm">
+            <div class="flex justify-between text-red-800" *ngIf="discount > 0">
+              <span>Giảm giá voucher</span>
+              <span>-{{ formatPrice(discount) }}</span>
+            </div>
+
+            <div class="flex justify-between text-gray-600" *ngIf="hasLoadingItems">
+              <span>Đang tải giá...</span>
+              <span class="animate-pulse">...</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between border-t pt-3">
+            <span class="text-base font-bold md:text-lg">Tổng cộng</span>
+            <span class="text-xl font-bold text-red-800 md:text-2xl">
+              {{ formatPrice(total) }}
+            </span>
+          </div>
+
+          <div class="border-t pt-3 text-xs text-gray-400">
+            <p class="mb-1" [class.text-green-600]="subtotal >= 500000">
+              {{ subtotal >= 500000 ? 'Đạt mức' : 'Cần thêm' }} miễn phí vận chuyển cho đơn hàng từ 500.000d
+              <span *ngIf="subtotal < 500000" class="mt-1 block">
+                Cần thêm {{ formatPrice(500000 - subtotal) }} để được miễn phí vận chuyển
+              </span>
+            </p>
+            <p>Giao hàng toàn quốc từ 2-5 ngày</p>
+          </div>
+
+          <button
+            (click)="checkout()"
+            [disabled]="!hasSelectedItems() || hasLoadingItems || subtotal === 0"
+            class="w-full rounded-xl bg-red-800 py-3 font-semibold text-white transition hover:bg-red-900 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Thanh toán
+          </button>
+
+          <button
+            (click)="clearCart()"
+            [disabled]="hasLoadingItems || cartItems.length === 0"
+            class="w-full rounded-xl border border-gray-300 py-2 text-sm text-gray-600 transition hover:bg-gray-50 disabled:opacity-50"
+          >
+            Xóa toàn bộ giỏ hàng
+          </button>
+
+          <div class="pt-3 text-center text-xs text-gray-400">
+            <p *ngIf="!cartService.isLoggedIn()">
+              Đã có tài khoản? <a routerLink="/login" class="text-red-800">Đăng nhập</a>
+            </p>
+            <p *ngIf="cartService.isLoggedIn()" class="text-green-600">Đã đăng nhập</p>
+            <p class="mt-2">
+              <a routerLink="/lien-he" class="hover:text-red-800">Liên hệ</a> nếu cần hỗ trợ
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && cartItems.length > 0" class="lg:hidden">
+    <div class="h-28"></div>
+    <div class="fixed inset-x-0 bottom-0 z-40 border-t border-gray-200 bg-white/95 px-4 pb-[max(12px,env(safe-area-inset-bottom))] pt-3 shadow-[0_-8px_24px_rgba(15,23,42,0.08)] backdrop-blur">
+      <div class="mx-auto max-w-7xl">
+        <div class="mb-2 flex items-start justify-between gap-3">
+          <div class="min-w-0 flex-1">
+            <p class="text-[11px] uppercase tracking-[0.12em] text-gray-400">Thông tin đơn hàng</p>
+            <div class="mt-1 flex items-center gap-2">
+              <span class="text-sm text-gray-500">Tổng cộng</span>
+              <span class="text-lg font-bold text-red-800">{{ formatPrice(total) }}</span>
+            </div>
+            <p *ngIf="discount > 0" class="mt-1 text-xs text-red-700">Đã giảm {{ formatPrice(discount) }}</p>
+
+            <div
+              *ngIf="appliedVoucher"
+              class="mt-2 flex items-center justify-between gap-3 rounded-lg bg-green-50 px-2.5 py-1.5 text-xs text-green-700"
+            >
+              <span class="min-w-0 truncate">Voucher: {{ appliedVoucher.maCode }}</span>
+              <button
+                type="button"
+                (click)="removeVoucher()"
+                class="flex-shrink-0 font-semibold text-green-700 underline underline-offset-2"
+              >
+                Xóa
+              </button>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            (click)="toggleVoucherList()"
+            class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-gray-200 text-gray-600"
+            [disabled]="subtotal <= 0 || eligibleVouchers.length === 0"
+            aria-label="Mở danh sách voucher"
+          >
+            <i class="fa-solid fa-ticket text-sm"></i>
+          </button>
+        </div>
+
+        <div
+          *ngIf="isVoucherListOpen && subtotal > 0 && eligibleVouchers.length > 0"
+          class="mb-3 max-h-40 space-y-2 overflow-y-auto rounded-2xl border border-stone-200 bg-stone-50 p-2"
+        >
+          <button
+            *ngFor="let voucher of eligibleVouchers"
+            type="button"
+            (click)="selectVoucher(voucher)"
+            class="w-full rounded-xl border p-3 text-left transition"
+            [class.border-red-800]="isVoucherSelected(voucher)"
+            [class.bg-red-50]="isVoucherSelected(voucher)"
+            [class.border-gray-200]="!isVoucherSelected(voucher)"
+          >
+            <div class="flex items-start justify-between gap-3">
+              <div class="min-w-0">
+                <p class="font-semibold text-gray-800">{{ voucher.maCode }}</p>
+                <p class="mt-1 text-xs text-red-700">{{ getVoucherSummary(voucher) }}</p>
+              </div>
+              <span class="whitespace-nowrap text-xs font-medium text-red-800">
+                {{ isVoucherSelected(voucher) ? 'Đang dùng' : 'Chọn' }}
+              </span>
+            </div>
+          </button>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button
+            (click)="clearCart()"
+            [disabled]="hasLoadingItems || cartItems.length === 0"
+            class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl border border-gray-300 text-gray-500 transition hover:bg-gray-50 disabled:opacity-50"
+            aria-label="Xóa toàn bộ giỏ hàng"
+          >
+            <i class="fa-regular fa-trash-can"></i>
+          </button>
+
+          <button
+            (click)="checkout()"
+            [disabled]="!hasSelectedItems() || hasLoadingItems || subtotal === 0"
+            class="flex-1 rounded-xl bg-red-800 py-3 font-semibold text-white transition hover:bg-red-900 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Thanh toán
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

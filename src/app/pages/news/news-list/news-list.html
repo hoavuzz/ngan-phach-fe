@@ -1,0 +1,65 @@
+<div class="main-content">
+  <div class="container">
+
+    <!-- DANH MỤC -->
+    <div class="category-bar" #categoryBar>
+      <a 
+        *ngFor="let dm of danhMucList" 
+        [routerLink]="['/tin-tuc']"
+        [queryParams]="{ danhMucId: dm.id }"
+        class="category-item"
+        [class.active]="dm.id == currentDanhMucId">
+
+        {{ dm.tenDanhMuc }}
+      </a>
+    </div>
+
+    <div class="content">
+
+      <!-- LEFT -->
+      <div class="left">
+
+        <div *ngFor="let item of list" class="news-item">
+
+          <img
+            [src]="getImage(item.hinhAnh)"
+            (error)="onImageError($event)"
+            alt="tin-tuc">
+
+          <div class="info">
+
+            <h3 [routerLink]="['/tin-tuc', item.slug]">
+              {{ item.tieuDe }}
+            </h3>
+
+            <!-- ✅ FIX DANH MỤC -->
+            <p class="category">
+              {{ item.danhmuc_tintuc?.tenDanhMuc }}
+            </p>
+
+            <p class="date">
+              {{ item.ngayDang | date:'dd/MM/yyyy' }}
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- RIGHT -->
+      <div class="right">
+        <h3>Tin nổi bật</h3>
+
+        <div *ngFor="let item of noiBat" class="hot-item">
+          <a [routerLink]="['/tin-tuc', item.slug]">
+            {{ item.tieuDe }}
+          </a>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>

@@ -1,0 +1,22 @@
+<section class="bg-neutral-100 py-8 md:py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="mb-5 md:mb-8">
+      <h2 class="text-xl font-semibold text-neutral-800 md:text-2xl">Sản phẩm nổi bật</h2>
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5">
+      <app-product-card *ngFor="let product of visibleProducts" [product]="product" badge="HOT">
+      </app-product-card>
+    </div>
+
+    <div *ngIf="hasMoreProducts" class="mt-6 flex justify-center">
+      <button
+        type="button"
+        (click)="toggleExpanded()"
+        class="rounded-full border border-amber-700 px-5 py-2 text-sm font-semibold text-amber-700 transition hover:bg-amber-700 hover:text-white"
+      >
+        {{ expanded ? 'Thu gọn' : 'Xem thêm' }}
+      </button>
+    </div>
+  </div>
+</section>

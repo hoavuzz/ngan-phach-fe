@@ -1,0 +1,172 @@
+<!-- search.html - Phiên bản sửa lỗi ảnh -->
+<div class="max-w-7xl mx-auto px-6 py-8">
+
+  <!-- Header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-amber-900 mb-2">
+      Kết quả tìm kiếm
+    </h1>
+    <p *ngIf="keyword" class="text-gray-600">
+      Tìm thấy <strong>{{ totalItems }}</strong> sản phẩm cho từ khóa "<strong>{{ keyword }}</strong>"
+    </p>
+    <p *ngIf="!keyword" class="text-gray-600">
+      Nhập từ khóa để tìm kiếm sản phẩm
+    </p>
+  </div>
+
+  <!-- Filters & Sort -->
+  <div *ngIf="keyword" class="flex flex-wrap gap-4 mb-8 p-4 bg-gray-50 rounded-lg">
+    <div class="flex items-center gap-2">
+      <label class="text-sm font-medium">Sắp xếp:</label>
+      <select
+        [(ngModel)]="sortBy"
+        (change)="onSortChange(sortBy)"
+        class="px-3 py-2 border rounded-lg focus:ring-amber-500 focus:border-amber-500">
+        <option value="moi_nhat">Mới nhất</option>
+        <option value="gia_tang_dan">Giá tăng dần</option>
+        <option value="gia_giam_dan">Giá giảm dần</option>
+        <option value="ban_chay">Bán chạy</option>
+      </select>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <input
+        type="number"
+        [(ngModel)]="minPrice"
+        placeholder="Giá từ"
+        (change)="onPriceFilter()"
+        class="w-28 px-3 py-2 border rounded-lg">
+      <span>-</span>
+      <input
+        type="number"
+        [(ngModel)]="maxPrice"
+        placeholder="Đến"
+        (change)="onPriceFilter()"
+        class="w-28 px-3 py-2 border rounded-lg">
+    </div>
+
+    <button
+      (click)="clearFilters()"
+      class="px-4 py-2 text-amber-600 hover:text-amber-800 transition">
+      Xóa bộ lọc
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-12">
+    <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-amber-800"></div>
+    <p class="mt-4 text-gray-600">Đang tìm kiếm...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+    {{ error }}
+  </div>
+
+  <!-- Products Grid -->
+  <div *ngIf="!loading && !error && keyword" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div *ngFor="let product of products; trackBy: trackByProductId" class="group">
+      <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition">
+        <a [routerLink]="['/products', product.slug]">
+          <!-- Hình ảnh - đơn giản không skeleton -->
+          <div class="h-64 bg-gray-100 overflow-hidden">
+            <img
+              [src]="product.hinhAnhDauTien"
+              [alt]="product.tenSanPham"
+              class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+              (error)="onImageError($event)"
+            >
+          </div>
+
+          <!-- Giảm giá -->
+          <div *ngIf="product.giaGoc && product.giaGoc > product.giaHienTai"
+               class="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-sm z-10">
+            -{{ ((product.giaGoc - product.giaHienTai) / product.giaGoc * 100) | number:'1.0-0' }}%
+          </div>
+
+          <div class="p-4">
+            <h3 class="text-lg font-semibold text-gray-800 mb-2 line-clamp-2">
+              {{ product.tenSanPham }}
+            </h3>
+
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-amber-600 font-bold">
+                {{ product.giaHienTai ? formatPrice(product.giaHienTai) : 'Liên hệ' }}
+              </span>
+              <span *ngIf="product.giaGoc && product.giaGoc > product.giaHienTai"
+                    class="text-gray-400 line-through text-sm">
+                {{ formatPrice(product.giaGoc) }}
+              </span>
+            </div>
+
+            <div class="flex items-center justify-between text-sm text-gray-500">
+              <div class="flex items-center gap-1">
+                <i class="fa-solid fa-star text-yellow-400"></i>
+                <span>{{ product.luotBan || 0 }} đã bán</span>
+              </div>
+              <div *ngIf="product.danhMuc?.tenDanhMuc" class="text-xs">
+                {{ product.danhMuc.tenDanhMuc }}
+              </div>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Results -->
+  <div *ngIf="!loading && !error && keyword && products.length === 0" class="text-center py-12">
+    <i class="fa-solid fa-search text-6xl text-gray-300 mb-4"></i>
+    <h3 class="text-xl font-semibold text-gray-600 mb-2">Không tìm thấy sản phẩm</h3>
+    <p class="text-gray-500">Vui lòng thử lại với từ khóa khác</p>
+    <button
+      (click)="clearFilters()"
+      class="mt-4 px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition">
+      Xóa bộ lọc
+    </button>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && !error && !keyword && products.length === 0" class="text-center py-12">
+    <i class="fa-solid fa-magnifying-glass text-6xl text-gray-300 mb-4"></i>
+    <h3 class="text-xl font-semibold text-gray-600 mb-2">Nhập từ khóa để tìm kiếm</h3>
+    <p class="text-gray-500">Tìm kiếm sản phẩm nhạc cụ dân tộc theo tên, danh mục hoặc thương hiệu</p>
+  </div>
+
+  <!-- Pagination -->
+  <div *ngIf="totalPages > 1 && !loading && products.length > 0" class="flex justify-center gap-2 mt-8">
+    <button
+      (click)="onPageChange(currentPage - 1)"
+      [disabled]="currentPage === 1"
+      class="px-4 py-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+      <i class="fa-solid fa-chevron-left"></i>
+    </button>
+
+    <button
+      *ngFor="let page of getPaginationArray()"
+      (click)="page !== -1 && onPageChange(page)"
+      [class]="page === currentPage
+        ? 'px-4 py-2 bg-amber-800 text-white rounded-lg'
+        : page === -1
+          ? 'px-4 py-2 cursor-default'
+          : 'px-4 py-2 border rounded-lg hover:bg-gray-50'"
+      [disabled]="page === -1">
+      {{ page === -1 ? '...' : page }}
+    </button>
+
+    <button
+      (click)="onPageChange(currentPage + 1)"
+      [disabled]="currentPage === totalPages"
+      class="px-4 py-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+  </div>
+
+  <!-- Summary -->
+  <div *ngIf="totalItems > 0 && !loading" class="text-center text-gray-500 text-sm mt-4">
+    Hiển thị {{ (currentPage - 1) * pageSize + 1 }} -
+    {{ currentPage * pageSize > totalItems ? totalItems : currentPage * pageSize }}
+    trong số {{ totalItems }} sản phẩm
+  </div>
+
+</div>

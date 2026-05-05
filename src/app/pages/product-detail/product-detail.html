@@ -1,0 +1,786 @@
+<section class="bg-neutral-50 py-8 md:py-12 min-h-screen">
+  <div class="mx-auto flex max-w-7xl flex-col gap-6 px-4 sm:px-6 lg:px-8">
+    <!-- Dynamic Meta Tags for SEO -->
+    <title>{{ product?.tenSanPham }} - Nhạc cụ truyền thống Việt Nam</title>
+    <meta name="description" content="{{ getMetaDescription() }}">
+    <meta name="keywords" content="{{ getMetaKeywords() }}">
+    <link rel="canonical" [href]="getCanonicalUrl()">
+
+    <!-- Open Graph Tags for Social Sharing -->
+    <meta property="og:title" content="{{ product?.tenSanPham }} - Nhạc cụ truyền thống Việt Nam">
+    <meta property="og:description" content="{{ getMetaDescription() }}">
+    <meta property="og:image" content="{{ getProductImage(product) }}">
+    <meta property="og:url" content="{{ getCanonicalUrl() }}">
+    <meta property="og:type" content="product">
+    <meta property="og:site_name" content="Nhạc cụ truyền thống Việt Nam">
+    <meta property="product:price:amount" content="{{ gia }}">
+    <meta property="product:price:currency" content="VND">
+    <meta property="product:availability" content="{{ tonKho > 0 ? 'in stock' : 'out of stock' }}">
+
+    <!-- Twitter Card Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ product?.tenSanPham }} - Nhạc cụ truyền thống Việt Nam">
+    <meta name="twitter:description" content="{{ getMetaDescription() }}">
+    <meta name="twitter:image" content="{{ getProductImage(product) }}">
+
+    <!-- Breadcrumb Structured Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Trang chủ",
+            "item": "{{ getBaseUrl() }}"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Sản phẩm",
+            "item": "{{ getBaseUrl() }}/products"
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "{{ product?.tenSanPham }}",
+            "item": "{{ getCanonicalUrl() }}"
+          }
+        ]
+      }
+    </script>
+
+    <!-- Enhanced Loading State -->
+    <div
+      *ngIf="!product"
+      class="rounded-3xl border border-dashed border-stone-300 bg-white px-6 py-16 text-center text-neutral-500 shadow-sm"
+      role="status"
+      aria-label="Đang tải thông tin sản phẩm"
+    >
+      <div class="animate-pulse space-y-4">
+        <div class="mx-auto h-16 w-16 rounded-full bg-gradient-to-r from-amber-200 to-orange-200"></div>
+        <div class="space-y-2">
+          <div class="mx-auto h-4 w-48 rounded bg-stone-200"></div>
+          <div class="mx-auto h-3 w-32 rounded bg-stone-200"></div>
+        </div>
+        <p class="text-sm">Đang tải sản phẩm...</p>
+      </div>
+      <span class="sr-only">Đang tải thông tin sản phẩm</span>
+    </div>
+
+    <ng-container *ngIf="product">
+      <!-- Enhanced Product Structured Data for SEO -->
+      <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "Product",
+          "name": "{{ product.tenSanPham }}",
+          "description": "{{ product.moTaNgan || product.moTaChiTiet | slice:0:160 }}",
+          "image": [
+            "{{ getProductImage(product) }}",
+            "{{ galleryImages.slice(0, 5).join('","') }}"
+          ],
+          "sku": "{{ product.sku || product.maSanPham || product.id }}",
+          "mpn": "{{ product.sku || product.maSanPham }}",
+          "brand": {
+            "@type": "Brand",
+            "name": "{{ product.thuongHieu?.tenThuongHieu || product.thuong_hieu?.ten_thuong_hieu || 'Nhạc cụ truyền thống' }}"
+          },
+          "category": "{{ product.danhMucNhacCu?.tenDanhMuc || product.danhmuc_nhaccu?.tenDanhMuc }}",
+          "offers": {
+            "@type": "Offer",
+            "url": "{{ getCanonicalUrl() }}",
+            "priceCurrency": "VND",
+            "price": "{{ gia }}",
+            "availability": "{{ tonKho > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}",
+            "priceValidUntil": "{{ getPriceValidUntil() }}",
+            "seller": {
+              "@type": "Organization",
+              "name": "Nhạc cụ truyền thống Việt Nam",
+              "url": "{{ getBaseUrl() }}"
+            },
+            "priceSpecification": {
+              "@type": "PriceSpecification",
+              "price": "{{ gia }}",
+              "priceCurrency": "VND"
+            }
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "{{ trungBinhDanhGia }}",
+            "reviewCount": "{{ tongDanhGia }}",
+            "bestRating": 5,
+            "worstRating": 1
+          },
+          "review": [
+            {
+              "@type": "Review",
+              "author": {
+                "@type": "Person",
+                "name": "{{ danhGias[0]?.nguoidung?.hoTen || 'Khách hàng' }}"
+              },
+              "reviewRating": {
+                "@type": "Rating",
+                "ratingValue": "{{ danhGias[0]?.soSao || trungBinhDanhGia }}",
+                "bestRating": 5
+              },
+              "reviewBody": "{{ danhGias[0]?.nhanXet || 'Sản phẩm chất lượng tốt' }}"
+            }
+          ],
+          "additionalProperty": [
+            {
+              "@type": "PropertyValue",
+              "name": "Trọng lượng",
+              "value": "{{ product.trongLuong || 'N/A' }} kg"
+            },
+            {
+              "@type": "PropertyValue",
+              "name": "Kích thước",
+              "value": "{{ product.kichThuoc || 'N/A' }}"
+            },
+            {
+              "@type": "PropertyValue",
+              "name": "Xuất xứ",
+              "value": "{{ product.xuatXu || 'Việt Nam' }}"
+            }
+          ],
+          "manufacturer": {
+            "@type": "Organization",
+            "name": "{{ product.thuongHieu?.tenThuongHieu || 'Nhạc cụ truyền thống Việt Nam' }}"
+          },
+          "productionDate": "{{ product.ngayTao || '2024' }}",
+          "releaseDate": "{{ product.ngayTao || '2024' }}"
+        }
+      </script>
+      <!-- Product main card -->
+      <div class="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm md:p-6">
+        <div class="grid gap-8 lg:grid-cols-[480px_1fr] xl:gap-12">
+          <!-- LEFT: Enhanced Image Gallery with Touch Support -->
+          <div class="space-y-4">
+            <!-- Main Image with Touch Gestures -->
+            <div class="relative overflow-hidden rounded-2xl border border-stone-200 bg-stone-50 group">
+              <div class="mx-auto flex aspect-square max-w-[500px] items-center justify-center overflow-hidden">
+                <img
+                  #mainImage
+                  [src]="getDisplayedImage()"
+                  [alt]="product.tenSanPham"
+                  (error)="onImageError($event)"
+                  (touchstart)="onTouchStart($event)"
+                  (touchmove)="onTouchMove($event)"
+                  (touchend)="onTouchEnd($event)"
+                  class="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105 cursor-zoom-in"
+                  loading="eager"
+                  role="img"
+                  [attr.aria-label]="'Ảnh chính của ' + product.tenSanPham"
+                />
+              </div>
+
+              <!-- Zoom Indicator -->
+              <div class="absolute bottom-4 right-4 rounded-full bg-black/70 px-3 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100">
+                <i class="fas fa-search-plus mr-1"></i>Nhấn để phóng to
+              </div>
+              <div *ngIf="product.giaThamKhao > gia" class="mt-3 rounded-lg bg-green-50 p-3 border border-green-200">
+                <p class="text-sm font-medium text-green-800">
+                  <i class="fas fa-piggy-bank mr-2" aria-hidden="true"></i>
+                  Tiáº¿t kiá»‡m {{ (product.giaThamKhao - gia) | number }}Ä‘ ({{ getDiscountPercentage() }}%)
+                </p>
+              </div>
+            </div>
+
+            <!-- Enhanced Thumbnail Gallery with Scroll Indicators -->
+            <div class="relative">
+              <div
+                #thumbnailContainer
+                class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide scroll-smooth"
+                role="tablist"
+                aria-label="Chọn ảnh sản phẩm"
+              >
+                <button
+                  *ngFor="let image of galleryImages; let i = index"
+                  type="button"
+                  (click)="selectImage(image)"
+                  (keydown.enter)="selectImage(image)"
+                  (keydown.space)="selectImage(image); $event.preventDefault()"
+                  class="thumb-button relative h-20 w-20 shrink-0 overflow-hidden rounded-xl border-2 bg-white transition-all duration-200 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 sm:h-24 sm:w-24"
+                  [class.thumb-button-active]="image === activeImage"
+                  [attr.aria-label]="'Xem ảnh ' + (i + 1) + ' của ' + product.tenSanPham"
+                  [attr.aria-selected]="image === activeImage"
+                  role="tab"
+                >
+                  <img
+                    [src]="image"
+                    [alt]="product.tenSanPham + ' - ảnh ' + (i + 1)"
+                    (error)="onImageError($event)"
+                    class="h-full w-full object-cover transition-transform duration-200 hover:scale-110"
+                    loading="lazy"
+                  />
+                  <div class="absolute inset-0 bg-amber-500/20 opacity-0 transition-opacity thumb-button-active:opacity-100"></div>
+                </button>
+              </div>
+
+              <!-- Scroll Indicators -->
+              <button
+                *ngIf="canScrollLeft()"
+                (click)="scrollThumbnails('left')"
+                class="absolute -left-2 top-1/2 -translate-y-1/2 rounded-full bg-white p-2 shadow-lg transition-all hover:bg-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                aria-label="Cuộn ảnh sang trái"
+              >
+                <i class="fas fa-chevron-left text-amber-700"></i>
+              </button>
+              <button
+                *ngIf="canScrollRight()"
+                (click)="scrollThumbnails('right')"
+                class="absolute -right-2 top-1/2 -translate-y-1/2 rounded-full bg-white p-2 shadow-lg transition-all hover:bg-amber-50 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                aria-label="Cuộn ảnh sang phải"
+              >
+                <i class="fas fa-chevron-right text-amber-700"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- RIGHT: Product info + buy box -->
+          <div class="flex min-w-0 flex-col gap-6">
+            <!-- Product Title & Basic Info -->
+            <div class="space-y-3">
+              <h1 class="text-2xl font-bold leading-tight text-neutral-900 md:text-3xl lg:text-4xl">
+                {{ product.tenSanPham }}
+              </h1>
+
+              <!-- Enhanced Product Stats with Mobile Layout -->
+              <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-neutral-600">
+                <div class="flex items-center gap-1.5">
+                  <i class="fa-regular fa-eye text-neutral-400" aria-hidden="true"></i>
+                  <span>{{ product.luotXem || 0 }} lượt xem</span>
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <i class="fa-solid fa-shopping-cart text-neutral-400" aria-hidden="true"></i>
+                  <span>{{ product.luotBan || 0 }} đã bán</span>
+                </div>
+                <div class="flex items-center gap-1.5" *ngIf="tongDanhGia > 0">
+                  <div class="review-stars text-sm" [attr.aria-label]="'Đánh giá trung bình ' + trungBinhDanhGia + ' sao'">
+                    <span *ngFor="let filled of getStarArray(getRoundedAverageDanhGia())" [class.filled]="filled">
+                      <i class="fa-solid fa-star" aria-hidden="true"></i>
+                    </span>
+                  </div>
+                  <span class="ml-1">{{ trungBinhDanhGia | number: '1.1-1' }} ({{ tongDanhGia }} đánh giá)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Enhanced Price Section with Mobile-First Design -->
+            <div class="hidden rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 p-4 border border-amber-100 sm:block">
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-baseline sm:justify-between">
+                <div class="flex flex-wrap items-baseline gap-3">
+                  <div class="text-3xl font-bold text-amber-700 lg:text-4xl">{{ gia | number }}đ</div>
+                  <div class="text-lg text-neutral-400 line-through" *ngIf="product.giaThamKhao > gia">
+                    {{ product.giaThamKhao | number }}đ
+                  </div>
+                  <div class="rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-700" *ngIf="product.giaThamKhao > gia">
+                    Giảm {{ getDiscountPercentage() }}%
+                  </div>
+                </div>
+
+                <!-- Enhanced Stock Status -->
+                <div class="flex flex-col gap-1 sm:items-end">
+                  <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-1.5 text-sm font-medium" [ngClass]="tonKho > 0 ? 'text-green-600' : 'text-red-600'">
+                      <i class="fa-solid" [ngClass]="tonKho > 0 ? 'fa-circle-check' : 'fa-circle-xmark'" aria-hidden="true"></i>
+                      <span>{{ tonKho > 0 ? 'Còn hàng' : 'Hết hàng' }}</span>
+                    </div>
+                  </div>
+                  <span class="text-sm text-neutral-500" *ngIf="tonKho > 0">
+                    Còn {{ tonKho }} sản phẩm
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Price Section - Ẩn trên mobile vì đã có ở sticky bar -->
+            <div class="hidden">
+              <div class="rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 p-4 border border-amber-100">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-baseline sm:justify-between">
+                  <div class="flex flex-wrap items-baseline gap-3">
+                    <div class="text-3xl font-bold text-amber-700 lg:text-4xl">{{ gia | number }}đ</div>
+                    <div class="text-lg text-neutral-400 line-through" *ngIf="product.giaThamKhao > gia">
+                      {{ product.giaThamKhao | number }}đ
+                    </div>
+                    <div class="rounded-full bg-red-100 px-3 py-1 text-sm font-medium text-red-700" *ngIf="product.giaThamKhao > gia">
+                      Giảm {{ getDiscountPercentage() }}%
+                    </div>
+                  </div>
+
+                  <!-- Enhanced Stock Status -->
+                  <div class="flex flex-col gap-1 sm:items-end">
+                    <div class="flex items-center gap-2">
+                      <div class="flex items-center gap-1.5 text-sm font-medium" [ngClass]="tonKho > 0 ? 'text-green-600' : 'text-red-600'">
+                        <i class="fa-solid" [ngClass]="tonKho > 0 ? 'fa-circle-check' : 'fa-circle-xmark'" aria-hidden="true"></i>
+                        <span>{{ tonKho > 0 ? 'Còn hàng' : 'Hết hàng' }}</span>
+                      </div>
+                    </div>
+                    <span class="text-sm text-neutral-500" *ngIf="tonKho > 0">
+                      Còn {{ tonKho }} sản phẩm
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Savings Info -->
+                <div *ngIf="product.giaThamKhao > gia" class="mt-3 rounded-lg bg-green-50 p-3 border border-green-200">
+                  <p class="text-sm font-medium text-green-800">
+                    <i class="fas fa-piggy-bank mr-2" aria-hidden="true"></i>
+                    Tiết kiệm {{ (product.giaThamKhao - gia) | number }}đ ({{ getDiscountPercentage() }}%)
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- QUANTITY + ADD TO CART - Chỉ hiện trên Desktop -->
+            <div *ngIf="false && product.sanpham_bienthes?.length > 0" class="mt-6">
+              <div class="mb-2 flex items-center justify-between">
+                <h3 class="text-sm font-semibold text-neutral-800">PhiÃªn báº£n</h3>
+                <span *ngIf="selectedBienThe" class="text-xs text-neutral-500">
+                  ÄÃ£ chá»n: {{ selectedBienThe.tenBienThe }}
+                </span>
+              </div>
+              <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+                <button
+                  *ngFor="let bt of product.sanpham_bienthes"
+                  type="button"
+                  (click)="chonBienThe(bt)"
+                  [disabled]="bt.tonKho === 0"
+                  class="rounded-lg border px-3 py-2 text-left text-sm transition sm:rounded-xl sm:px-4 sm:py-2.5"
+                  [ngClass]="{
+                    'border-amber-700 bg-amber-700 text-white shadow-sm': selectedBienThe?.id === bt.id,
+                    'border-stone-200 bg-white text-neutral-700 hover:border-amber-400 hover:text-amber-700': selectedBienThe?.id !== bt.id && bt.tonKho > 0,
+                    'cursor-not-allowed border-stone-200 bg-stone-100 text-neutral-400': bt.tonKho === 0
+                  }"
+                >
+                  <span class="block font-medium text-xs sm:text-sm">{{ bt.tenBienThe }}</span>
+                  <span class="mt-0.5 block text-xs opacity-80">
+                    {{ bt.tonKho > 0 ? (bt.tonKho + ' sp') : 'Háº¿t hÃ ng' }}
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            <div class="order-4 mt-7 hidden rounded-2xl border border-stone-200 bg-gradient-to-r from-amber-50 to-orange-50 p-6 sm:block">
+              <div class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+                <!-- Enhanced Quantity Selector with Touch Support -->
+                <div class="flex-1">
+                  <label for="quantity-input-desktop" class="block text-sm font-medium text-neutral-700 mb-2">Số lượng</label>
+                  <div class="inline-flex items-center rounded-full border border-stone-200 bg-white p-1 shadow-sm">
+                    <button
+                      type="button"
+                      (click)="giam()"
+                      [disabled]="soLuong <= 1"
+                      (touchstart)="$event.preventDefault(); giam()"
+                      class="flex h-10 w-10 items-center justify-center rounded-full text-lg font-semibold text-neutral-700 hover:bg-stone-100 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:focus:ring-0 transition-colors touch-manipulation"
+                      aria-label="Giảm số lượng"
+                    >
+                      <i class="fa-solid fa-minus" aria-hidden="true"></i>
+                    </button>
+                    <input
+                      id="quantity-input-desktop"
+                      type="number"
+                      [(ngModel)]="soLuong"
+                      (ngModelChange)="onQuantityChange()"
+                      min="1"
+                      [max]="tonKho"
+                      class="quantity-input h-10 w-14 border-0 bg-transparent text-center text-base font-semibold text-neutral-900 focus:outline-none"
+                      aria-label="Số lượng sản phẩm"
+                      inputmode="numeric"
+                      pattern="[0-9]*"
+                    />
+                    <button
+                      type="button"
+                      (click)="tang()"
+                      [disabled]="soLuong >= tonKho"
+                      (touchstart)="$event.preventDefault(); tang()"
+                      class="flex h-10 w-10 items-center justify-center rounded-full text-lg font-semibold text-neutral-700 hover:bg-stone-100 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:focus:ring-0 transition-colors touch-manipulation"
+                      aria-label="Tăng số lượng"
+                    >
+                      <i class="fa-solid fa-plus" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                  <p class="mt-2 text-xs text-neutral-500">
+                    Còn lại <span class="font-medium text-neutral-800">{{ getRemainingStock() }}</span> sản phẩm
+                  </p>
+                </div>
+
+                <!-- Enhanced Add to Cart Button with Mobile Support -->
+                <button
+                  type="button"
+                  (click)="addToCart()"
+                  [disabled]="!selectedBienThe || tonKho === 0 || tonKho < soLuong"
+                  class="group relative w-full overflow-hidden rounded-full bg-gradient-to-r from-amber-600 to-orange-600 px-8 py-4 text-base font-semibold text-white shadow-lg transition-all duration-200 hover:from-amber-700 hover:to-orange-700 hover:shadow-xl hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:from-stone-400 disabled:to-stone-400 disabled:shadow-none disabled:hover:translate-y-0 disabled:focus:ring-0 touch-manipulation sm:w-auto"
+                  [attr.aria-label]="tonKho === 0 ? 'Sản phẩm hiện hết hàng' : 'Thêm sản phẩm vào giỏ hàng'"
+                >
+                  <span class="relative z-10 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-cart-plus text-lg" aria-hidden="true"></i>
+                    <span>{{ tonKho === 0 ? 'Hết hàng' : 'Thêm vào giỏ hàng' }}</span>
+                  </span>
+
+                  <!-- Hover effect overlay -->
+                  <div class="absolute inset-0 bg-gradient-to-r from-orange-600 to-amber-600 opacity-0 transition-opacity group-hover:opacity-100"></div>
+                </button>
+              </div>
+            </div>
+
+            <!-- Biến thể (phiên bản) - Compact cho mobile -->
+            <div *ngIf="product.sanpham_bienthes?.length > 0" class="order-3 mt-6">
+              <div class="mb-2 flex items-center justify-between">
+                <h3 class="text-sm font-semibold text-neutral-800">Phiên bản</h3>
+                <span *ngIf="selectedBienThe" class="text-xs text-neutral-500">
+                  Đã chọn: {{ selectedBienThe.tenBienThe }}
+                </span>
+              </div>
+              <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+                <button
+                  *ngFor="let bt of product.sanpham_bienthes"
+                  type="button"
+                  (click)="chonBienThe(bt)"
+                  [disabled]="bt.tonKho === 0"
+                  class="rounded-lg border px-3 py-2 text-left text-sm transition sm:rounded-xl sm:px-4 sm:py-2.5"
+                  [ngClass]="{
+                    'border-amber-700 bg-amber-700 text-white shadow-sm': selectedBienThe?.id === bt.id,
+                    'border-stone-200 bg-white text-neutral-700 hover:border-amber-400 hover:text-amber-700': selectedBienThe?.id !== bt.id && bt.tonKho > 0,
+                    'cursor-not-allowed border-stone-200 bg-stone-100 text-neutral-400': bt.tonKho === 0
+                  }"
+                >
+                  <span class="block font-medium text-xs sm:text-sm">{{ bt.tenBienThe }}</span>
+                  <span class="mt-0.5 block text-xs opacity-80">
+                    {{ bt.tonKho > 0 ? (bt.tonKho + ' sp') : 'Hết hàng' }}
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Thuộc tính động -->
+            <div *ngFor="let tt of product.thuocTinh" class="mt-5">
+              <h3 class="mb-2 text-sm font-semibold text-neutral-800">{{ tt.ten }}</h3>
+              <div class="flex flex-wrap gap-2">
+                <button
+                  *ngFor="let val of tt.giaTri"
+                  type="button"
+                  (click)="chonThuocTinh(tt.ten, val)"
+                  class="rounded-full border border-stone-200 bg-white px-4 py-1.5 text-sm text-neutral-700 transition hover:border-amber-400 hover:text-amber-700"
+                >
+                  {{ val }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mô tả + thông tin (2 cột) -->
+      <div class="mt-8 grid gap-6 md:grid-cols-2">
+        <section class="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
+          <h2 class="mb-4 flex items-center gap-2 text-xl font-semibold text-neutral-800">
+            <i class="fa-solid fa-file-alt text-amber-600"></i>
+            Mô tả sản phẩm
+          </h2>
+          <div class="prose prose-sm max-w-none text-neutral-600">
+            <div [innerHTML]="product.moTaChiTiet || product.moTaNgan || 'Sản phẩm hiện chưa có mô tả chi tiết.'"></div>
+          </div>
+        </section>
+
+        <section class="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
+          <h2 class="mb-4 flex items-center gap-2 text-xl font-semibold text-neutral-800">
+            <i class="fa-solid fa-info-circle text-amber-600"></i>
+            Thông tin sản phẩm
+          </h2>
+          <div class="space-y-4">
+            <!-- Brand -->
+            <div *ngIf="product.thuongHieu" class="flex items-center justify-between border-b border-stone-100 pb-3">
+              <span class="text-sm font-medium text-neutral-600">Thương hiệu</span>
+              <span class="text-sm font-semibold text-neutral-800">{{ product.thuongHieu.tenThuongHieu }}</span>
+            </div>
+
+            <!-- Category -->
+            <div *ngIf="product.danhMucNhacCu" class="flex items-center justify-between border-b border-stone-100 pb-3">
+              <span class="text-sm font-medium text-neutral-600">Danh mục</span>
+              <span class="text-sm font-semibold text-neutral-800">{{ product.danhMucNhacCu.tenDanhMuc }}</span>
+            </div>
+
+            <!-- SKU -->
+            <div *ngIf="product.sku" class="flex items-center justify-between border-b border-stone-100 pb-3">
+              <span class="text-sm font-medium text-neutral-600">Mã sản phẩm</span>
+              <span class="text-sm font-semibold text-neutral-800">{{ product.sku }}</span>
+            </div>
+
+            <!-- Weight -->
+            <div *ngIf="product.trongLuong" class="flex items-center justify-between border-b border-stone-100 pb-3">
+              <span class="text-sm font-medium text-neutral-600">Trọng lượng</span>
+              <span class="text-sm font-semibold text-neutral-800">{{ product.trongLuong }} kg</span>
+            </div>
+
+            <!-- Dimensions -->
+            <div *ngIf="product.kichThuoc" class="flex items-center justify-between border-b border-stone-100 pb-3">
+              <span class="text-sm font-medium text-neutral-600">Kích thước</span>
+              <span class="text-sm font-semibold text-neutral-800">{{ product.kichThuoc }}</span>
+            </div>
+
+            <!-- Warranty -->
+            <div class="flex items-center justify-between border-b border-stone-100 pb-3">
+              <span class="text-sm font-medium text-neutral-600">Bảo hành</span>
+              <span class="text-sm font-semibold text-neutral-800">{{ product.thoiGianBaoHanh || '12 tháng' }}</span>
+            </div>
+
+            <!-- Origin -->
+            <div *ngIf="product.xuatXu" class="flex items-center justify-between">
+              <span class="text-sm font-medium text-neutral-600">Xuất xứ</span>
+              <span class="text-sm font-semibold text-neutral-800">{{ product.xuatXu }}</span>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Đánh giá -->
+      <div class="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
+        <h2 class="mb-6 flex items-center gap-2 text-xl font-semibold text-neutral-800">
+          <i class="fa-solid fa-star text-amber-600"></i>
+          Đánh giá sản phẩm
+        </h2>
+
+        <div *ngIf="selectedBienThe" class="mb-8 rounded-xl border border-amber-100 bg-gradient-to-r from-amber-50 to-orange-50 p-6">
+          <div class="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p class="text-sm font-medium text-neutral-600 mb-1">Đánh giá trung bình</p>
+              <div class="flex items-baseline gap-2">
+                <strong class="text-4xl font-bold text-amber-700">
+                  {{ trungBinhDanhGia | number: '1.1-1' }}
+                </strong>
+                <span class="text-lg text-neutral-500">/5</span>
+              </div>
+              <p class="mt-1 text-sm text-neutral-600">{{ tongDanhGia }} đánh giá</p>
+            </div>
+            <div class="text-center">
+              <div class="review-stars text-2xl mb-2">
+                <span *ngFor="let filled of getStarArray(getRoundedAverageDanhGia())" [class.filled]="filled">
+                  <i class="fa-solid fa-star"></i>
+                </span>
+              </div>
+              <div class="text-sm text-neutral-600">
+                <span class="font-medium">{{ getRatingPercentage(5) }}%</span> 5 sao
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="dangTaiDanhGia" class="rounded-xl border border-dashed border-stone-300 bg-stone-50 p-8 text-center">
+          <div class="flex items-center justify-center gap-3">
+            <i class="fa-solid fa-spinner fa-spin text-amber-600"></i>
+            <span class="text-sm text-neutral-600">Đang tải đánh giá...</span>
+          </div>
+        </div>
+
+        <div *ngIf="!dangTaiDanhGia && !selectedBienThe" class="rounded-xl border border-dashed border-stone-300 bg-stone-50 p-8 text-center">
+          <i class="fa-solid fa-info-circle text-2xl text-neutral-400 mb-2"></i>
+          <p class="text-sm text-neutral-600">Chọn phiên bản để xem đánh giá</p>
+        </div>
+
+        <div *ngIf="!dangTaiDanhGia && selectedBienThe && danhGias.length === 0" class="rounded-xl border border-dashed border-stone-300 bg-stone-50 p-8 text-center">
+          <i class="fa-solid fa-comments text-2xl text-neutral-400 mb-2"></i>
+          <p class="text-sm text-neutral-600">Chưa có đánh giá nào cho sản phẩm này</p>
+        </div>
+
+        <div class="space-y-4" *ngIf="!dangTaiDanhGia && danhGias.length > 0">
+          <article *ngFor="let dg of danhGias" class="rounded-xl border border-stone-200 bg-white p-5 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-full bg-amber-100 text-amber-700 font-semibold">
+                  {{ (dg.nguoidung?.hoTen || 'K')[0] }}
+                </div>
+                <div>
+                  <p class="font-semibold text-neutral-900">{{ dg.nguoidung?.hoTen || 'Khách hàng' }}</p>
+                  <div class="review-stars text-sm">
+                    <span *ngFor="let filled of getStarArray(dg.soSao)" [class.filled]="filled">
+                      <i class="fa-solid fa-star"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <span class="text-xs text-neutral-400 bg-stone-100 px-2 py-1 rounded-full">
+                {{ dg.ngayTao | date: 'dd/MM/yyyy' }}
+              </span>
+            </div>
+            <p class="text-sm leading-relaxed text-neutral-600" *ngIf="dg.nhanXet">
+              {{ dg.nhanXet }}
+            </p>
+            <p class="text-sm text-neutral-400 italic" *ngIf="!dg.nhanXet">
+              Không có nhận xét chi tiết.
+            </p>
+          </article>
+        </div>
+
+        <!-- Phân trang đánh giá -->
+        <div class="mt-8 flex flex-wrap justify-center gap-2" *ngIf="tongTrangDanhGia > 1">
+          <button
+            (click)="changeDanhGiaPage(danhGiaTrang - 1)"
+            [disabled]="danhGiaTrang === 1"
+            class="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm font-medium text-neutral-700 hover:border-amber-400 hover:bg-amber-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            <i class="fa-solid fa-chevron-left mr-1"></i>
+            Trước
+          </button>
+          <button
+            *ngFor="let page of getDanhGiaPages()"
+            (click)="changeDanhGiaPage(page)"
+            class="rounded-full border px-4 py-2 text-sm font-medium transition-colors"
+            [ngClass]="page === danhGiaTrang ? 'border-amber-700 bg-amber-700 text-white' : 'border-stone-200 bg-white text-neutral-700 hover:border-amber-400 hover:bg-amber-50'"
+          >
+            {{ page }}
+          </button>
+          <button
+            (click)="changeDanhGiaPage(danhGiaTrang + 1)"
+            [disabled]="danhGiaTrang === tongTrangDanhGia"
+            class="rounded-full border border-stone-200 bg-white px-4 py-2 text-sm font-medium text-neutral-700 hover:border-amber-400 hover:bg-amber-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            Sau
+            <i class="fa-solid fa-chevron-right ml-1"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Sản phẩm liên quan -->
+      <section class="mt-8 rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
+        <h2 class="mb-6 flex items-center gap-2 text-xl font-semibold text-neutral-800">
+          <i class="fa-solid fa-th-large text-amber-600"></i>
+          Sản phẩm liên quan
+        </h2>
+
+        <div *ngIf="relatedProducts.length === 0" class="rounded-xl border border-dashed border-stone-300 bg-stone-50 p-8 text-center">
+          <i class="fa-solid fa-box-open text-3xl text-neutral-400 mb-3"></i>
+          <p class="text-sm text-neutral-600">Chưa có sản phẩm liên quan.</p>
+        </div>
+
+        <div *ngIf="relatedProducts.length > 0" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <article
+            *ngFor="let p of relatedProducts"
+            class="group overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-lg"
+          >
+            <a [routerLink]="['/products', p.slug]" class="block">
+              <div class="aspect-square overflow-hidden bg-stone-100">
+                <img
+                  [src]="getProductImage(p)"
+                  [alt]="p.tenSanPham"
+                  (error)="onImageError($event)"
+                  class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                  loading="lazy"
+                />
+              </div>
+            </a>
+            <div class="p-4">
+              <a [routerLink]="['/products', p.slug]" class="block">
+                <h3 class="font-semibold text-neutral-800 hover:text-amber-700 line-clamp-2 mb-2 transition-colors">
+                  {{ p.tenSanPham }}
+                </h3>
+              </a>
+
+              <div class="flex items-center justify-between">
+                <div class="flex flex-col">
+                  <span class="text-lg font-bold text-amber-700">{{ p.giaThamKhao | number }}đ</span>
+                  <span class="text-xs text-neutral-500 line-through" *ngIf="p.giaThamKhao > p.giaBan">
+                    {{ p.giaThamKhao | number }}đ
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  (click)="addRelatedToCart(p)"
+                  class="rounded-full bg-amber-600 p-2 text-white shadow-sm transition-all hover:bg-amber-700 hover:shadow-md"
+                  title="Thêm vào giỏ hàng"
+                >
+                  <i class="fa-solid fa-cart-plus text-sm"></i>
+                </button>
+              </div>
+
+              <div class="mt-2 flex items-center gap-1 text-xs text-neutral-500" *ngIf="p.luotBan > 0">
+                <i class="fa-solid fa-shopping-cart"></i>
+                <span>{{ p.luotBan }} đã bán</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Mobile Sticky Bottom Bar - Layout cải thiện -->
+      <div class="sticky bottom-0 z-50 mt-8 block border-t border-stone-200 bg-white/95 backdrop-blur-lg p-4 shadow-2xl sm:hidden">
+        <div class="grid grid-cols-[auto_1fr] items-center gap-3">
+          <!-- Giá + Stock Status -->
+          <div class="col-span-2 min-w-0">
+            <div class="flex flex-col gap-1">
+              <div class="flex items-baseline gap-2">
+                <span class="text-xl font-bold text-amber-700">{{ gia | number }}đ</span>
+                <span class="text-sm text-neutral-500 line-through" *ngIf="product?.giaThamKhao > gia">
+                  {{ product.giaThamKhao | number }}đ
+                </span>
+              </div>
+              </div>
+              <div class="flex items-center gap-1.5 text-xs" [ngClass]="tonKho > 0 ? 'text-green-600' : 'text-red-600'">
+                <i class="fa-solid" [ngClass]="tonKho > 0 ? 'fa-circle-check' : 'fa-circle-xmark'" aria-hidden="true"></i>
+                <span>{{ tonKho > 0 ? 'Còn hàng' : 'Hết hàng' }}</span>
+                <span class="text-neutral-500" *ngIf="tonKho > 0">({{ tonKho }} sp)</span>
+              </div>
+              </div>
+          <!-- Quantity Selector Compact -->
+          <div class="flex items-center gap-1">
+            <button
+              type="button"
+              (click)="giam()"
+              [disabled]="soLuong <= 1"
+              (touchstart)="$event.preventDefault(); giam()"
+              class="flex h-9 w-9 items-center justify-center rounded-lg border border-stone-300 bg-white text-sm font-semibold text-neutral-700 hover:bg-stone-50 focus:outline-none focus:ring-2 focus:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation transition-colors"
+              aria-label="Giảm số lượng"
+            >
+              <i class="fa-solid fa-minus" aria-hidden="true"></i>
+            </button>
+            <div class="flex flex-col items-center">
+              <input
+                type="number"
+                [(ngModel)]="soLuong"
+                (ngModelChange)="onQuantityChange()"
+                min="1"
+                [max]="tonKho"
+                class="quantity-input h-9 w-12 border-0 bg-transparent text-center text-sm font-semibold text-neutral-900 focus:outline-none"
+                aria-label="Số lượng sản phẩm"
+                inputmode="numeric"
+                pattern="[0-9]*"
+              />
+              <span class="text-xs text-neutral-500 leading-none">SL</span>
+            </div>
+            <button
+              type="button"
+              (click)="tang()"
+              [disabled]="soLuong >= tonKho"
+              (touchstart)="$event.preventDefault(); tang()"
+              class="flex h-9 w-9 items-center justify-center rounded-lg border border-stone-300 bg-white text-sm font-semibold text-neutral-700 hover:bg-stone-50 focus:outline-none focus:ring-2 focus:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed touch-manipulation transition-colors"
+              aria-label="Tăng số lượng"
+            >
+              <i class="fa-solid fa-plus" aria-hidden="true"></i>
+            </button>
+          </div>
+
+          <!-- Add to Cart Button -->
+          <button
+            type="button"
+            (click)="addToCart()"
+            [disabled]="!selectedBienThe || tonKho === 0 || tonKho < soLuong"
+            class="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-600 to-orange-600 px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:from-amber-700 hover:to-orange-700 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-amber-500 disabled:cursor-not-allowed disabled:from-stone-400 disabled:to-stone-400 touch-manipulation"
+            [attr.aria-label]="tonKho === 0 ? 'Sản phẩm hiện hết hàng' : 'Thêm sản phẩm vào giỏ hàng'"
+          >
+            <i class="fa-solid fa-cart-plus" aria-hidden="true"></i>
+            <span>{{ tonKho === 0 ? 'Hết hàng' : 'Thêm' }}</span>
+          </button>
+        </div>
+
+        <!-- Discount Badge nếu có -->
+        <div *ngIf="product?.giaThamKhao > gia" class="mt-2 flex justify-center">
+          <div class="rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-700">
+            Giảm {{ getDiscountPercentage() }}% - Tiết kiệm {{ (product.giaThamKhao - gia) | number }}đ
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    </div>
+  </section>

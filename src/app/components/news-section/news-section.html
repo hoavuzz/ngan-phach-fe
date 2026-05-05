@@ -1,0 +1,57 @@
+<section class="bg-white py-8 md:py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="mb-5 flex items-center justify-between md:mb-8">
+      <h2 class="text-xl font-semibold text-neutral-800 md:text-2xl">Tin tức</h2>
+      <button class="text-sm text-amber-700 hover:underline md:text-base" routerLink="/tin-tuc">
+        Xem tất cả
+      </button>
+    </div>
+
+    <div *ngIf="isLoading" class="py-12 text-center">
+      <i class="fa-solid fa-circle-notch fa-spin text-3xl text-amber-600"></i>
+      <p class="mt-3 text-gray-500">Đang tải tin tức...</p>
+    </div>
+
+    <div *ngIf="error" class="py-12 text-center text-red-500">
+      <p>{{ error }}</p>
+    </div>
+
+    <div *ngIf="!isLoading && !error && newsList.length === 0" class="py-12 text-center text-gray-500">
+      <p>Chưa có tin tức nào.</p>
+    </div>
+
+    <div *ngIf="!isLoading && !error && newsList.length > 0" class="grid gap-4 md:grid-cols-3 md:gap-5">
+      <div *ngFor="let news of newsList" class="overflow-hidden rounded-xl border bg-white transition hover:shadow-lg">
+        <div class="h-40 overflow-hidden bg-gray-100 sm:h-44 md:h-48">
+          <img
+            *ngIf="news.hinhAnh"
+            [src]="'http://localhost:3000/uploads/' + news.hinhAnh"
+            [alt]="news.tieuDe"
+            class="h-full w-full object-cover transition duration-300 hover:scale-105"
+          />
+          <div *ngIf="!news.hinhAnh" class="flex h-full w-full items-center justify-center bg-gray-200">
+            <i class="fa-regular fa-newspaper text-4xl text-gray-400"></i>
+          </div>
+        </div>
+
+        <div class="p-4 sm:p-5">
+          <p class="mb-2 text-sm text-neutral-500">
+            {{ news.ngayDang | date:'dd/MM/yyyy' }}
+          </p>
+
+          <h3 class="mb-2 line-clamp-2 font-semibold text-neutral-800">
+            {{ news.tieuDe }}
+          </h3>
+
+          <p class="mb-3 line-clamp-2 text-sm text-neutral-600">
+            {{ news.tomTat || news.moTaNgan }}{{ (news.tomTat || news.moTaNgan) ? '...' : '' }}
+          </p>
+
+          <a [routerLink]="['/tin-tuc', news.slug]" class="cursor-pointer text-sm text-amber-700 hover:underline">
+            Đọc thêm →
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

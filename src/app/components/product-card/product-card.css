@@ -1,0 +1,8 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.product-card-shell {
+  box-sizing: border-box;
+}

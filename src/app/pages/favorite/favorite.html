@@ -1,0 +1,107 @@
+<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+  <div class="mb-8">
+    <h1 class="mb-2 text-3xl font-bold text-amber-900">Sản phẩm yêu thích</h1>
+    <p class="text-gray-600">Danh sách các sản phẩm bạn đã thích</p>
+  </div>
+
+  <div *ngIf="isLoading" class="flex items-center justify-center py-20">
+    <i class="fa-solid fa-circle-notch fa-spin text-4xl text-amber-700"></i>
+    <span class="ml-3 text-gray-600">Đang tải...</span>
+  </div>
+
+  <div *ngIf="!isLoading && favorites.length === 0" class="rounded-lg bg-gray-50 py-20 text-center">
+    <i class="fa-regular fa-heart mb-4 text-6xl text-gray-300"></i>
+    <p class="text-lg text-gray-500">Bạn chưa có sản phẩm yêu thích nào</p>
+    <a
+      routerLink="/"
+      class="mt-4 inline-block rounded-lg bg-amber-700 px-6 py-2 text-white transition hover:bg-amber-800"
+    >
+      Tiếp tục mua sắm
+    </a>
+  </div>
+
+  <div
+    *ngIf="!isLoading && favorites.length > 0"
+    class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+  >
+    <div *ngFor="let item of paginatedFavorites" class="group">
+      <div class="relative overflow-hidden rounded-lg bg-white shadow-md transition hover:shadow-xl">
+        <button
+          (click)="removeFavorite(item.yeuThichId, favorites.indexOf(item))"
+          class="group absolute right-2 top-2 z-20 rounded-full bg-white p-2 shadow-md transition hover:bg-red-50"
+        >
+          <i class="fa-solid fa-trash-can text-gray-400 transition group-hover:text-red-500"></i>
+        </button>
+
+        <a [routerLink]="['/products', item.sanPham?.slug]">
+          <div class="relative">
+            <img
+              [src]="getImageUrl(item.sanPham?.hinhAnh)"
+              [alt]="item.sanPham?.tenSanPham"
+              class="h-56 w-full object-cover transition duration-300 group-hover:scale-105 sm:h-64"
+              (error)="onImageError($event, item.sanPham)"
+            />
+          </div>
+
+          <div class="p-4">
+            <h3 class="line-clamp-2 mb-2 text-lg font-semibold text-gray-800">
+              {{ item.sanPham?.tenSanPham }}
+            </h3>
+
+            <div class="mb-2 flex items-center gap-2">
+              <span class="font-bold text-amber-600">
+                {{ formatPrice(item.sanPham?.giaBan) }}
+              </span>
+              <span *ngIf="item.sanPham?.giaKhuyenMai" class="text-sm text-gray-400 line-through">
+                {{ formatPrice(item.sanPham?.giaKhuyenMai) }}
+              </span>
+            </div>
+
+            <div *ngIf="item.bienThe" class="mb-2 text-sm text-gray-500">
+              <span class="font-medium">Biến thể:</span> {{ item.bienThe.tenBienThe }}
+            </div>
+
+            <div class="text-xs text-gray-400">
+              <i class="fa-regular fa-calendar-alt mr-1"></i>
+              Thêm ngày: {{ item.ngayThem | date: 'dd/MM/yyyy' }}
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && favorites.length > 0" class="mt-8 text-center text-gray-500">
+    Hiển thị {{ paginatedFavorites.length }} / {{ favorites.length }} sản phẩm yêu thích
+  </div>
+
+  <div *ngIf="!isLoading && totalPages > 1" class="mt-6 flex flex-wrap items-center justify-center gap-2">
+    <button
+      type="button"
+      (click)="changePage(currentPage - 1)"
+      [disabled]="currentPage === 1"
+      class="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700 transition hover:border-amber-700 hover:text-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
+    >
+      Trước
+    </button>
+
+    <button
+      *ngFor="let page of pageNumbers"
+      type="button"
+      (click)="changePage(page)"
+      [class.active-page]="page === currentPage"
+      class="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700 transition hover:border-amber-700 hover:text-amber-700"
+    >
+      {{ page }}
+    </button>
+
+    <button
+      type="button"
+      (click)="changePage(currentPage + 1)"
+      [disabled]="currentPage === totalPages"
+      class="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700 transition hover:border-amber-700 hover:text-amber-700 disabled:cursor-not-allowed disabled:opacity-50"
+    >
+      Sau
+    </button>
+  </div>
+</div>

@@ -1,0 +1,227 @@
+<!-- src/app/pages/checkout/checkout.html -->
+<div class="min-h-screen bg-gray-50 py-10 px-4">
+  <div class="mx-auto max-w-6xl overflow-hidden rounded-2xl bg-white shadow-sm">
+
+    <!-- ✅ FORM BAO TOÀN BỘ -->
+    <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit()">
+
+      <div class="flex flex-col gap-6 lg:flex-row lg:gap-8">
+
+        <!-- Form bên trái -->
+        <div class="flex-1 p-5 sm:p-6 lg:p-8">
+
+          <!-- Địa chỉ giao hàng -->
+          <div class="mb-8">
+            <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <h2 class="text-lg font-medium text-gray-800 border-b-2 border-amber-500 pb-2">
+                Địa chỉ giao hàng
+              </h2>
+              <button
+                type="button"
+                (click)="addAddress()"
+                class="text-sm text-amber-600 hover:text-amber-800">
+                + Thêm địa chỉ mới
+              </button>
+            </div>
+
+            <div *ngIf="isLoadingAddresses" class="text-center py-4">
+              <p class="text-gray-500">Đang tải địa chỉ...</p>
+            </div>
+
+            <div *ngIf="!isLoadingAddresses && addresses.length === 0" class="text-center py-8 border-2 border-dashed border-gray-300 rounded-lg">
+              <p class="text-gray-500 mb-3">Bạn chưa có địa chỉ nào</p>
+              <button
+                type="button"
+                (click)="addAddress()"
+                class="text-amber-600 hover:text-amber-800">
+                + Thêm địa chỉ mới
+              </button>
+            </div>
+
+            <div *ngIf="!isLoadingAddresses && addresses.length > 0" class="space-y-3">
+              <div
+                *ngFor="let address of addresses"
+                class="border rounded-lg p-4 cursor-pointer transition-all"
+                [class.border-amber-500]="selectedAddress?.id === address.id"
+                [class.bg-amber-50]="selectedAddress?.id === address.id"
+                [class.border-gray-200]="selectedAddress?.id !== address.id"
+                (click)="selectAddress(address)">
+
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                      <span class="font-medium text-gray-800">{{ address.hoTenNguoiNhan }}</span>
+                      <span *ngIf="address.macDinh" class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded">
+                        Mặc định
+                      </span>
+                    </div>
+                    <p class="text-sm text-gray-600">{{ address.soDienThoai }}</p>
+                    <p class="text-sm text-gray-600 mt-1">
+                      {{ address.diaChiChiTiet }}, {{ address.phuongXa }}, {{ address.quanHuyen }}, {{ address.thanhPho }}
+                    </p>
+                  </div>
+
+                  <div class="flex gap-3 sm:justify-end">
+                    <button
+                      type="button"
+                      (click)="editAddress(address.id); $event.stopPropagation()"
+                      class="text-xs text-amber-600 hover:text-amber-800">
+                      Sửa
+                    </button>
+                    <button
+                      *ngIf="!address.macDinh"
+                      type="button"
+                      (click)="deleteAddress(address.id); $event.stopPropagation()"
+                      class="text-xs text-red-500 hover:text-red-700">
+                      Xóa
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ghi chú -->
+          <div class="mb-8">
+            <h2 class="text-lg font-medium text-gray-800 border-b-2 border-amber-500 pb-2 mb-4">
+              Ghi chú
+            </h2>
+            <div>
+              <textarea
+                formControlName="note"
+                rows="3"
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-amber-500 focus:border-amber-500 transition"
+                placeholder="Ghi chú về đơn hàng, thời gian giao hàng..."></textarea>
+            </div>
+          </div>
+
+          <!-- Phương thức thanh toán -->
+          <div class="mb-8">
+            <h2 class="text-lg font-medium text-gray-800 border-b-2 border-amber-500 pb-2 mb-4">
+              Phương thức thanh toán
+            </h2>
+
+            <div class="space-y-3">
+              <div
+                *ngFor="let method of paymentMethods"
+                class="flex items-center gap-4 p-3 border rounded-lg cursor-pointer"
+                [class.border-amber-500]="selectedPaymentMethod === method.value"
+                [class.bg-amber-50]="selectedPaymentMethod === method.value"
+                [class.border-gray-200]="selectedPaymentMethod !== method.value"
+                (click)="selectPaymentMethod(method.value)">
+                <div class="flex-shrink-0">
+                  <div class="w-4 h-4 rounded-full border flex items-center justify-center"
+                    [class.border-amber-500]="selectedPaymentMethod === method.value"
+                    [class.border-gray-300]="selectedPaymentMethod !== method.value">
+                    <div class="w-2 h-2 rounded-full bg-amber-500" *ngIf="selectedPaymentMethod === method.value"></div>
+                  </div>
+                </div>
+                <div class="flex-1">
+                  <div class="text-gray-800">{{ method.label }}</div>
+                  <div class="text-xs text-gray-400" *ngIf="method.value === 'payos'">
+                    Thanh toán qua VietQR hoặc Internet Banking
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT -->
+        <div class="p-5 sm:p-6 lg:w-96 lg:p-8">
+          <div class="bg-white border border-gray-200 rounded-lg p-6">
+
+            <h2 class="text-lg font-medium text-gray-800 border-b-2 border-amber-500 pb-2 mb-4">
+              Đơn hàng của bạn
+            </h2>
+
+            <div *ngIf="isLoadingCart" class="text-center py-8">
+              <p class="text-gray-500">Đang tải sản phẩm...</p>
+            </div>
+
+            <div *ngIf="!isLoadingCart && cartItems.length > 0" class="max-h-40 overflow-y-auto pr-2 space-y-3 mb-6 custom-scrollbar">
+              <div *ngFor="let item of cartItems" class="flex flex-col gap-2 border-b border-gray-200 pb-3 text-sm sm:flex-row sm:items-center sm:justify-between last:border-0">
+                <div class="flex-1">
+                  <div class="text-gray-700 font-medium">{{ item.tenSanPham }}</div>
+                  <div class="text-gray-500 text-xs">{{ item.tenBienThe }}</div>
+                </div>
+                <div class="flex items-center justify-between gap-2 sm:justify-end">
+                  <span class="text-gray-500">x{{ item.soluong }}</span>
+                  <span class="text-gray-800 font-medium">{{ formatPrice(item.gia * item.soluong) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="!isLoadingCart && cartItems.length === 0" class="text-center py-8">
+              <p class="text-gray-500">Giỏ hàng trống</p>
+            </div>
+
+            <div *ngIf="cartItems.length > 0" class="space-y-2 pt-4 border-t border-gray-200">
+              <div class="flex justify-between text-sm text-gray-600">
+                <span>Tạm tính</span>
+                <span>{{ formatPrice(getSubtotal()) }}</span>
+              </div>
+              <div class="flex justify-between text-sm text-red-700" *ngIf="getDiscount() > 0">
+                <span>Voucher {{ appliedVoucher?.code }}</span>
+                <span>-{{ formatPrice(getDiscount()) }}</span>
+              </div>
+              <div class="flex justify-between text-sm text-gray-600">
+                <span>Phí vận chuyển</span>
+                <span>{{ formatPrice(orderData.phiVanChuyen) }}</span>
+              </div>
+              <div class="flex justify-between text-base font-medium text-gray-800 pt-2 border-t border-gray-200">
+                <span>Tổng cộng</span>
+                <span class="text-amber-700">{{ formatPrice(getTotal()) }}</span>
+              </div>
+            </div>
+
+            <!-- Checkbox -->
+            <div *ngIf="cartItems.length > 0" class="mt-6 pt-4 border-t border-gray-200">
+              <div class="flex items-start gap-2">
+                <input
+                  type="checkbox"
+                  id="agreeTerms"
+                  formControlName="agreeTerms"
+                  class="mt-0.5 w-4 h-4 text-amber-600 rounded border-gray-300">
+                <label for="agreeTerms" class="text-xs text-gray-500">
+                  Tôi đồng ý với điều khoản sử dụng
+                </label>
+              </div>
+              <p *ngIf="f['agreeTerms']?.invalid && f['agreeTerms']?.touched" class="text-red-500 text-xs mt-1">
+                Vui lòng đồng ý với điều khoản để tiếp tục
+              </p>
+            </div>
+
+            <!-- ✅ BUTTON FIX -->
+            <button
+              type="submit"
+              *ngIf="cartItems.length > 0"
+              class="w-full mt-4 bg-amber-600 hover:bg-amber-700 text-white py-3 rounded-lg font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
+              [disabled]="isProcessing || !checkoutForm.valid || !selectedAddress">
+
+              <span *ngIf="!isProcessing">Đặt hàng ngay</span>
+
+              <span *ngIf="isProcessing">Đang xử lý...</span>
+            </button>
+
+          </div>
+        </div>
+
+      </div>
+
+    </form>
+
+  </div>
+</div>
+
+
+<!-- Address Modal -->
+<app-address-modal
+  *ngIf="showAddressModal"
+  [addressId]="editingAddressId"
+  [addressData]="editingAddressData"
+  (close)="handleAddressModalClose()"
+  (save)="handleAddressModalSave($event)">
+</app-address-modal>
+

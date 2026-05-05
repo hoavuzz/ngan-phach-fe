@@ -1,0 +1,114 @@
+<ng-container *ngIf="!mobile; else mobileSidebar">
+  <div class="w-full rounded-2xl border border-neutral-200 bg-white p-5 shadow-md lg:w-64">
+    <div class="flex items-center gap-3 border-b border-neutral-100 pb-5">
+      <img
+        [src]="user?.anhDaiDien || 'assets/default-avatar.png'"
+        class="h-12 w-12 rounded-full object-cover ring-2 ring-amber-200 shadow-sm"
+      />
+
+      <div>
+        <p class="font-semibold leading-tight text-neutral-800">
+          {{ getRoleDisplay() }}
+        </p>
+      </div>
+    </div>
+
+    <nav class="mt-5 space-y-1 text-sm">
+      <a
+        routerLink="/trang-ca-nhan"
+        routerLinkActive="bg-amber-600 text-white shadow-sm"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="flex items-center gap-3 rounded-lg px-4 py-2.5 text-neutral-700 transition-all duration-200 hover:bg-amber-50"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A9 9 0 1118.879 17.804M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        <span>Thông tin cá nhân</span>
+      </a>
+
+      <a
+        routerLink="/trang-ca-nhan/don-hang-cua-toi"
+        routerLinkActive="bg-amber-600 text-white shadow-sm"
+        class="flex items-center gap-3 rounded-lg px-4 py-2.5 text-neutral-700 transition-all duration-200 hover:bg-amber-50"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V5a2 2 0 00-2-2h-3l-2-2-2 2H6a2 2 0 00-2 2v8m16 0l-8 8-8-8"/>
+        </svg>
+        <span>Đơn hàng của tôi</span>
+      </a>
+
+      <a
+        *ngIf="isAdmin"
+        (click)="goToAdmin()"
+        class="flex cursor-pointer items-center gap-3 rounded-lg px-4 py-2.5 text-neutral-700 transition-all duration-200 hover:bg-amber-50"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span>Trang quản trị</span>
+      </a>
+
+      <div class="my-3 border-t border-neutral-100"></div>
+
+      <button
+        (click)="logout()"
+        class="flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-red-600 transition-all duration-200 hover:bg-red-50"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7"/>
+        </svg>
+        <span>Đăng xuất</span>
+      </button>
+    </nav>
+  </div>
+</ng-container>
+
+<ng-template #mobileSidebar>
+  <div class="fixed inset-x-0 bottom-0 z-50 border-t border-neutral-200 bg-white/95 px-3 pt-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] shadow-[0_-8px_24px_rgba(0,0,0,0.08)] backdrop-blur lg:hidden">
+    <nav class="grid gap-2 text-xs" [class.grid-cols-3]="!isAdmin" [class.grid-cols-4]="isAdmin">
+      <a
+        routerLink="/trang-ca-nhan"
+        routerLinkActive="bg-amber-600 text-white shadow-sm"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="flex flex-col items-center justify-center gap-1 rounded-2xl px-3 py-2 text-neutral-700 transition-all duration-200 active:scale-[0.98]"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A9 9 0 1118.879 17.804M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        <span class="text-center leading-tight">Tài khoản</span>
+      </a>
+
+      <a
+        routerLink="/trang-ca-nhan/don-hang-cua-toi"
+        routerLinkActive="bg-amber-600 text-white shadow-sm"
+        class="flex flex-col items-center justify-center gap-1 rounded-2xl px-3 py-2 text-neutral-700 transition-all duration-200 active:scale-[0.98]"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V5a2 2 0 00-2-2h-3l-2-2-2 2H6a2 2 0 00-2 2v8m16 0l-8 8-8-8"/>
+        </svg>
+        <span class="text-center leading-tight">Đơn hàng</span>
+      </a>
+
+      <button
+        *ngIf="isAdmin"
+        (click)="goToAdmin()"
+        class="flex flex-col items-center justify-center gap-1 rounded-2xl px-3 py-2 text-neutral-700 transition-all duration-200 active:scale-[0.98]"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span class="text-center leading-tight">Quản trị</span>
+      </button>
+
+      <button
+        (click)="logout()"
+        class="flex flex-col items-center justify-center gap-1 rounded-2xl px-3 py-2 text-red-600 transition-all duration-200 active:scale-[0.98]"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7"/>
+        </svg>
+        <span class="text-center leading-tight">Đăng xuất</span>
+      </button>
+    </nav>
+  </div>
+</ng-template>

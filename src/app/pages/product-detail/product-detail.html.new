@@ -1,0 +1,149 @@
+<div *ngIf="!product">Đang tải sản phẩm...</div>
+
+<div *ngIf="product" class="container">
+  <div class="detail-container">
+    <div class="left">
+      <img [src]="getProductImage(product)" [alt]="product.tenSanPham" (error)="onImageError($event)" />
+    </div>
+
+    <div class="right">
+      <h1>{{ product.tenSanPham }}</h1>
+
+      <div class="price">{{ gia | number }}đ</div>
+
+      <div *ngIf="product.sanpham_bienthes?.length > 0" class="mt-4">
+        <h4 class="mb-2 text-base font-semibold">Chọn phiên bản:</h4>
+
+        <div class="flex flex-wrap gap-2">
+          <button
+            *ngFor="let bt of product.sanpham_bienthes"
+            (click)="chonBienThe(bt)"
+            [disabled]="bt.tonKho === 0"
+            class="px-4 py-2 border rounded-md text-sm transition-all duration-200"
+            [ngClass]="{
+              'border-green-500 bg-green-500 text-white font-medium': selectedBienThe?.id === bt.id,
+              'border-gray-300 bg-white hover:border-green-500 hover:text-green-500':
+                selectedBienThe?.id !== bt.id && bt.tonKho > 0,
+              'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed': bt.tonKho === 0,
+            }"
+          >
+            {{ bt.tenBienThe }}
+          </button>
+        </div>
+      </div>
+
+      <div class="meta">
+        <span>Lượt xem: {{ product.luotXem }}</span>
+        <span>Lượt bán: {{ product.luotBan }}</span>
+      </div>
+
+      <div class="info">
+        <p><b>Nguồn gốc:</b> {{ product.nguonGoc }}</p>
+        <p><b>Chất liệu:</b> {{ product.chatLieu }}</p>
+        <p><b>Xuất xứ:</b> {{ product.xuatXu }}</p>
+        <p><b>Nghệ nhân:</b> {{ product.ngheNhan }}</p>
+        <p><b>Mô tả ngắn:</b> {{ product.moTaNgan }}</p>
+      </div>
+
+      <div class="quantity">
+        <span>Số lượng:</span>
+
+        <button (click)="giam()">-</button>
+        <input type="number" [(ngModel)]="soLuong" (ngModelChange)="onQuantityChange()" min="1" [max]="tonKho" />
+        <button (click)="tang()">+</button>
+
+        <span class="stock">Còn lại: {{ getRemainingStock() }} sản phẩm</span>
+      </div>
+
+      <div *ngFor="let tt of product.thuocTinh">
+        <h4>{{ tt.ten }}</h4>
+
+        <button *ngFor="let val of tt.giaTri" (click)="chonThuocTinh(tt.ten, val)">
+          {{ val }}
+        </button>
+      </div>
+
+      <button (click)="addToCart()" [disabled]="!selectedBienThe || tonKho === 0">Thêm vào giỏ hàng</button>
+    </div>
+  </div>
+
+  <div class="description-section">
+    <h2>Mô Tả Sản Phẩm</h2>
+    <p>{{ product.moTaChiTiet }}</p>
+  </div>
+
+  <div class="comment-section">
+    <h2>Đánh giá sản phẩm</h2>
+
+    <div class="review-summary" *ngIf="selectedBienThe">
+      <div class="review-score">
+        <strong>{{ trungBinhDanhGia | number: '1.1-1' }}</strong>
+        <span>/ 5</span>
+      </div>
+
+      <div class="review-meta">
+        <div class="review-stars">
+          <span *ngFor="let filled of getStarArray(Math.round(trungBinhDanhGia))" [class.filled]="filled">
+            ★
+          </span>
+        </div>
+        <p>{{ tongDanhGia }} đánh giá cho phiên bản này</p>
+      </div>
+    </div>
+
+    <div *ngIf="dangTaiDanhGia" class="review-empty">Đang tải đánh giá...</div>
+
+    <div *ngIf="!dangTaiDanhGia && !selectedBienThe" class="review-empty">
+      Sản phẩm này hiện chưa có phiên bản để hiển thị đánh giá.
+    </div>
+
+    <div *ngIf="!dangTaiDanhGia && selectedBienThe && danhGias.length === 0" class="review-empty">
+      Chưa có đánh giá nào cho phiên bản đang chọn.
+    </div>
+
+    <div class="comment review-card" *ngFor="let dg of danhGias">
+      <div class="comment-header">
+        <div>
+          <b>{{ dg.nguoidung?.hoTen || 'Khách hàng' }}</b>
+          <div class="review-stars small">
+            <span *ngFor="let filled of getStarArray(dg.soSao)" [class.filled]="filled">★</span>
+          </div>
+        </div>
+        <span>{{ dg.ngayTao | date: 'dd/MM/yyyy' }}</span>
+      </div>
+
+      <div class="comment-content">
+        {{ dg.nhanXet || 'Khách hàng chưa để lại nhận xét chi tiết.' }}
+      </div>
+    </div>
+
+    <div class="pagination" *ngIf="tongTrangDanhGia > 1">
+      <button (click)="changeDanhGiaPage(danhGiaTrang - 1)" [disabled]="danhGiaTrang === 1">Trước</button>
+
+      <button
+        *ngFor="let page of getDanhGiaPages()"
+        (click)="changeDanhGiaPage(page)"
+        [class.active]="page === danhGiaTrang"
+      >
+        {{ page }}
+      </button>
+
+      <button (click)="changeDanhGiaPage(danhGiaTrang + 1)" [disabled]="danhGiaTrang === tongTrangDanhGia">
+        Sau
+      </button>
+    </div>
+  </div>
+
+  <h3>Sản phẩm liên quan</h3>
+
+  <div class="product-grid">
+    <div class="product-card" *ngFor="let p of relatedProducts">
+      <a [routerLink]="['/products', p.slug]">
+        <img [src]="getProductImage(p)" [alt]="p.tenSanPham" (error)="onImageError($event)" />
+      </a>
+
+      <h4>{{ p.tenSanPham }}</h4>
+      <p>{{ p.giaThamKhao | number }}đ</p>
+    </div>
+  </div>
+</div>
